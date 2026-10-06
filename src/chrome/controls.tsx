@@ -5,6 +5,7 @@ import { useResume, type Paper } from '../store/resume';
 import { useUi, type Zoom } from '../store/ui';
 import logoUrl from '../assets/ui/logo.svg';
 import downloadUrl from '../assets/ui/download.svg';
+import downloadSmUrl from '../assets/ui/download-sm.svg';
 
 export const doPrint = () => {
   try {
@@ -24,8 +25,9 @@ export function Mark({ note }: { note?: boolean }) {
   );
 }
 
-/** Download glyph from the UI guideline. */
-export const DownloadGlyph = () => <img src={downloadUrl} width={14} height={17.75} alt="" aria-hidden="true" />;
+/** Download glyph from the UI guideline; `small` is the toolbar's Export PDF size (Figma 515:780). */
+export const DownloadGlyph = ({ small }: { small?: boolean }) =>
+  small ? <img src={downloadSmUrl} width={10.7059} height={13.5735} alt="" aria-hidden="true" /> : <img src={downloadUrl} width={14} height={17.75} alt="" aria-hidden="true" />;
 
 const DESKTOP_ZOOMS: [Zoom, string][] = [['fit', 'Fit'], [75, '75%'], [100, '100%'], [125, '125%']];
 const TOUCH_ZOOMS: [Zoom, string][] = [['fit', 'Fit'], [100, '100%']];
@@ -48,7 +50,7 @@ export function PaperSeg({ big }: { big?: boolean }) {
   const paper = useResume((s) => s.meta.paper);
   const setPaper = useResume((s) => s.setPaper);
   return (
-    <div className={big ? 'seg big' : 'seg'} role="group" aria-label="Paper size">
+    <div className={big ? 'seg paper big' : 'seg paper'} role="group" aria-label="Paper size">
       {PAPERS.map(([p, label]) => (
         <button key={p} type="button" aria-pressed={paper === p} onClick={() => setPaper(p)}>{label}</button>
       ))}

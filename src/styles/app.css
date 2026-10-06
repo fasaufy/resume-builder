@@ -133,6 +133,16 @@ textarea.fi.sm{min-height:48px}
 .btnp:hover{background:#f8f8f8}
 .btnw{box-shadow:0 0 0 1px #fca5a5}
 
+/* toolbar (Figma 515:780): frosted switches, white Export pill */
+.bar{padding:0 16px 0 32px}
+.bar .seg{height:auto;padding:3px;gap:3px;border-radius:16px;background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.bar .seg button{width:49px;height:30px;padding:0;border-radius:13px}
+.bar .seg.paper button{width:73px}
+.bar .seg button[aria-pressed="true"]{border-radius:13px;background:#fff;box-shadow:var(--shadow-soft)}
+.bar .seg.big button{height:38px}
+.bar .btnp{height:36px;padding:0 14px;border-radius:16px;font-size:14px}
+.bar .btnp.tall{height:44px}
+
 /* Styles panel */
 .panel{background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:16px}
 .panel-lbl{font-size:11px;font-weight:600;color:#475569}
