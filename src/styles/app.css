@@ -1,0 +1,172 @@
+/* Ported from design-reference/Main.dc.html. Chrome is restyled by the UI guideline block at the end. */
+.app,.app *{box-sizing:border-box}
+.app{font-family:'Inclusive Sans',ui-sans-serif,system-ui,-apple-system,sans-serif;color:#111827;background:#e8eaee;-webkit-font-smoothing:antialiased}
+.app button{font:inherit;color:inherit;cursor:pointer}
+.app button:disabled{opacity:.4;cursor:default}
+.app button:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+
+/* inline canvas fields */
+.ed{display:block;width:100%;min-width:0;margin:0;padding:1px 3px;border:0;border-radius:3px;background:transparent;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:inherit;line-height:inherit;outline:none}
+.ed::placeholder{color:inherit;opacity:.45}
+.ed:hover{background:rgba(37,99,235,.06)}
+.ed:focus{background:rgba(37,99,235,.07);box-shadow:inset 0 0 0 1px rgba(37,99,235,.65)}
+textarea.ed{resize:none;overflow:hidden;field-sizing:content;min-height:1.45em}
+.edi{display:inline-block;width:11ch;field-sizing:content;min-width:4ch}
+.item{position:relative;break-inside:avoid;page-break-inside:avoid}
+.rowctl{position:absolute;top:-13px;right:0;display:flex;gap:2px;opacity:0;transition:opacity .12s;z-index:3}
+.item:hover>.rowctl,.item:focus-within>.rowctl{opacity:1}
+.ctl{width:22px;height:22px;display:grid;place-items:center;padding:0;border:1px solid #cbd5e1;border-radius:5px;background:#fff;color:#334155;font-family:'Inclusive Sans',sans-serif;font-size:12px;line-height:1;font-style:normal;font-weight:500;letter-spacing:0;text-transform:none}
+.ctl:hover{background:#f1f5f9}
+.add{display:inline-flex;align-self:flex-start;align-items:center;gap:4px;margin-top:4px;padding:3px 8px;border:1px dashed #94a3b8;border-radius:5px;background:transparent;color:#475569;font-family:'Inclusive Sans',sans-serif;font-size:10.5px;font-weight:500;font-style:normal;letter-spacing:0;text-transform:none;line-height:1.3}
+.add:hover{border-color:#2563eb;color:#1d4ed8}
+.bul{display:flex;gap:5px;align-items:flex-start}
+.bul>span{flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.chipw{display:inline-flex;align-items:center;border-radius:999px;padding:1px 7px;font-size:10.5px;line-height:1.5}
+.chipw .edi{width:9ch;min-width:5ch;padding:0 1px}
+/* secondary face for links, dates and ID tags */
+.geist{font-family:'Geist',ui-sans-serif,sans-serif}
+
+/* section title styles per layout */
+.st01{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.st02{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.st03{font-family:'Hedvig Letters Serif',Georgia,serif;font-size:14px;font-weight:400;font-style:normal;font-synthesis:none}
+.st04{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.st06{font-family:'Hanken Grotesk',sans-serif;font-size:30px;font-weight:700;line-height:1.05;letter-spacing:-.02em}
+.st07{font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.st08{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.st10{font-family:'Hanken Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.bdg{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:9.5px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:#475569}
+.card10{border:1px solid #e2e8f0;border-radius:0;padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+
+/* app chrome */
+.bar{flex:none;display:flex;align-items:center;gap:12px;height:56px;padding:0 16px;background:#fff;border-bottom:1px solid #d6d9de}
+.mark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.markbox{width:18px;height:24px;border:1.6px solid #111827;border-radius:3px;display:flex;flex-direction:column;gap:2px;padding:4px 3px}
+.markbox i{display:block;height:1.6px;background:#111827;border-radius:1px}
+.tag{font-family:'Geist',sans-serif;font-size:10.5px;font-weight:500;padding:2px 6px;border-radius:4px;border:1px solid #d1d5db;color:#4b5563;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border:1px solid #c9ced6;border-radius:8px;background:#fff;font-size:13px;font-weight:500;white-space:nowrap}
+.btn:hover{background:#f3f4f6}
+.btn.tall{height:44px;padding:0 14px}
+.btnp{background:#111827;border-color:#111827;color:#fff !important}
+.btnp:hover{background:#1f2937}
+.btnw{color:#b91c1c !important;border-color:#fca5a5}
+.seg{display:inline-flex;padding:3px;gap:2px;border-radius:9px;background:#eef0f3;border:1px solid #d6d9de}
+.seg button{height:30px;padding:0 10px;border:0;border-radius:6px;background:transparent;font-size:12.5px;font-weight:500;color:#4b5563 !important;white-space:nowrap}
+.seg.big button{height:38px;padding:0 14px;font-size:13px}
+.seg button[aria-pressed="true"]{background:#fff;color:#111827 !important;box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.lbl{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#4b5563}
+.stat{font-size:12px;color:#4b5563;white-space:nowrap}
+.lrow{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:1px solid transparent;border-radius:9px;background:transparent;text-align:left}
+.lrow:hover{background:#f3f4f6}
+.lrow[aria-pressed="true"]{border-color:#111827;background:#fff;box-shadow:inset 0 0 0 1px #111827}
+.sw{display:flex;align-items:center;gap:9px;padding:8px 9px;min-height:44px;border:1px solid #d6d9de;border-radius:9px;background:#fff;font-size:12.5px;font-weight:500;text-align:left;white-space:nowrap}
+.sw:hover{border-color:#9ca3af}
+.sw[aria-pressed="true"]{border-color:#111827;box-shadow:inset 0 0 0 1px #111827}
+.dot{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(0,0,0,.12)}
+.pill{display:inline-flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;flex:none;min-height:52px;padding:6px 12px;border:1px solid #d6d9de;border-radius:10px;background:#fff;text-align:left;white-space:nowrap}
+.pill[aria-pressed="true"]{border-color:#111827;box-shadow:inset 0 0 0 1px #111827}
+.ib{width:44px;height:44px;flex:none;display:grid;place-items:center;padding:0;border:1px solid #c9ced6;border-radius:10px;background:#fff}
+.ib:hover{background:#f3f4f6}
+.hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hs::-webkit-scrollbar{display:none}
+.stage{position:relative;background-color:#e8eaee;background-image:radial-gradient(#c9cdd4 1px,transparent 1px);background-size:18px 18px}
+.track{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;outline:none}
+.track::-webkit-scrollbar{display:none}
+.slide{flex:none;position:relative;scroll-snap-align:center;scroll-snap-stop:always;transition:opacity .2s ease}
+.page{position:absolute;top:0;left:0;transform-origin:0 0;background:#fff;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.08),0 10px 30px rgba(15,23,42,.14)}
+.hit{position:absolute;inset:0;z-index:6;border:0;padding:0;background:transparent}
+.dots{display:flex;gap:5px;align-items:center}
+.dt{width:6px;height:6px;border-radius:50%;background:#b8bec8;transition:width .2s}
+.dt.on{width:18px;border-radius:3px;background:#111827}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.tbb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;border-radius:10px;background:transparent;font-size:11.5px;font-weight:500}
+.tbb:hover{background:#f3f4f6}
+.fl{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151}
+.fi{width:100%;min-height:44px;padding:10px 12px;border:1px solid #c9ced6;border-radius:9px;background:#fff;font:inherit;font-size:16px;font-weight:400;color:#111827}
+.fi::placeholder{color:#6b7280}
+.fi:focus{outline:2px solid #2563eb;outline-offset:-1px;border-color:#2563eb}
+textarea.fi{resize:none;field-sizing:content;min-height:72px;line-height:1.45}
+textarea.fi.sm{min-height:48px}
+.fcard{border:1px solid #e5e7eb;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+
+
+/* ---- additions for the React port ---- */
+/* dashed add buttons keep their content width inside grid rows too */
+.add{justify-self:start}
+/* clip, not hidden: focusing a field below the fold must not scroll the page box itself */
+.page{overflow:clip}
+/* inputs use field-sizing; give browsers without it a sane fallback width */
+/* The wireframe pinned .edi to 11ch, which beats field-sizing and clips long values
+   (emails, URLs). Where field-sizing works, size inline fields to their content. */
+@supports (field-sizing: content) {
+  .edi, .chipw .edi { width: auto; max-width: 100%; }
+}
+/* dnd-kit drag handle (keyboard fallback stays the ↑ ↓ buttons) */
+.ctl.grab { cursor: grab; touch-action: none; }
+.ctl.grab:active { cursor: grabbing; }
+.item.is-dragging{background:#fff;box-shadow:0 0 0 1px rgba(37,99,235,.5),0 8px 20px rgba(15,23,42,.18);border-radius:4px}
+.item.is-dragging>.rowctl{opacity:1}
+
+/* ==== UI guideline (Figma "Daybük" 512:772: Styles panel 526:2291, navigator 526:2799) ==== */
+:root{
+  --app-bg:linear-gradient(180deg,#C2D4E0 0%,#D9DDDE 25.87%,#F5E9E5 100%);
+  --shadow-soft:0 0 4px rgba(153,153,153,0),0 0 4px rgba(153,153,153,.03),0 0 3px rgba(153,153,153,.1),0 0 2px rgba(153,153,153,.17),0 0 1px rgba(153,153,153,.2);
+  --hair:#dadada;
+}
+.app{background:var(--app-bg)}
+.stage{background:transparent}
+.page{box-shadow:var(--shadow-soft)}
+
+/* toolbar */
+.bar{background:transparent;border-bottom:0}
+.note{display:inline-flex;padding:4px 8px;border-radius:3px;background:#dae5eb;color:#334155;font-size:10px;font-weight:500;text-transform:uppercase;white-space:nowrap}
+.stat{color:#475569}
+.seg{height:38px;padding:3px;gap:2px;border:0;border-radius:10px;background:rgba(230,230,227,.2);align-items:center}
+.seg button{height:30px;padding:0 8px;border-radius:5px;font-size:12px;font-weight:400;color:#475569 !important}
+.seg button[aria-pressed="true"]{border-radius:7px;background:rgba(255,255,255,.3);box-shadow:0 1px 3px rgba(0,0,0,.04);font-weight:500;color:#111827 !important}
+.seg.big{height:44px}
+.seg.big button{height:38px;padding:0 12px;font-size:13px}
+.btn{gap:8px;border:0;background:#fff;box-shadow:var(--shadow-soft);color:#111827}
+.btn:hover{background:#f8f8f8}
+.btnp{padding:0 14px;font-size:16px;font-weight:500;background:#fff;color:#111827 !important}
+.btnp:hover{background:#f8f8f8}
+.btnw{box-shadow:0 0 0 1px #fca5a5}
+
+/* Styles panel */
+.panel{background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:16px}
+.panel-lbl{font-size:11px;font-weight:600;color:#475569}
+.panel-sub{font-size:11px;font-weight:600;color:#334155}
+.code{display:inline-flex;padding:3px 6px;border-radius:3px;background:#e9e9e9;color:#334155;font-family:'Geist',sans-serif;font-size:10px;line-height:normal;white-space:nowrap}
+.opt{border:.5px solid var(--hair);border-radius:9px;background:transparent;text-align:left}
+.opt:hover{background:rgba(255,255,255,.5)}
+.opt[aria-pressed="true"]{border-color:transparent;background:#fff;box-shadow:var(--shadow-soft)}
+.theme-opt{position:relative;display:flex;align-items:center;gap:6px;height:44px;padding:0 9px 0 8px;min-width:0}
+.swatches{position:relative;flex:none;width:35px;height:24px}
+.swatches img{position:absolute;top:0;width:24px;height:24px}
+.swatches i{position:absolute;top:2px;width:20px;height:20px;border-radius:50%}
+.theme-opt .name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;color:#111827}
+.layout-opt{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;height:50px;padding:0 11px;width:100%}
+
+/* floating glass navigator */
+.navsheet{position:relative;width:454px;max-width:100%;border-radius:32px;
+  background:rgba(247,247,247,.72);-webkit-backdrop-filter:blur(24px) saturate(1.3);backdrop-filter:blur(24px) saturate(1.3);
+  box-shadow:1.25px 0 0 -.75px rgba(219,219,219,.4),-1.25px 0 0 -.75px rgba(219,219,219,.4),0 0 0 .5px rgba(219,219,219,.8),0 8px 48px rgba(0,0,0,.08),
+    inset 0 40px 10px -40px rgba(40,40,40,.2),inset 0 -40px 10px -40px rgba(40,40,40,.2)}
+.navbtn{flex:none;display:grid;place-items:center;width:44px;height:44px;padding:0;border:0;border-radius:999px;
+  background:linear-gradient(rgba(255,255,255,.62),rgba(240,240,240,.62));
+  box-shadow:1.25px 0 0 -.75px #d0d0d0,-1.25px 0 0 -.75px #d0d0d0,0 0 0 .5px #e8e8e8,0 8px 15px rgba(0,0,0,.02)}
+.navbtn:hover{background:#fff}
+.navbtn img{width:36px;height:36px}
+.navbtn:disabled{opacity:.35}
+.pager{display:flex;align-items:center;justify-content:space-between;width:286px;max-width:100%}
+.pager button,.pager span{display:grid;place-items:center;width:32px;height:32px;padding:0;border:0;border-radius:8px;background:transparent;font-size:16px;line-height:1;color:#1e1e1e}
+.pager button:hover{background:rgba(255,255,255,.5)}
+.pager button[aria-current="true"]{border-radius:7px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.04);font-size:12px;font-weight:500;color:#111827}
+.pager span{font-weight:700;color:#000}
+
+/* carousel navigator pill (Figma 526:3409): 36px visible button, asset carries its own shadow, 44px hit area */
+.pillbtn{position:relative;flex:none;width:36px;height:36px;padding:0;border:0;border-radius:13px;background:transparent}
+.pillbtn img{position:absolute;top:-4px;left:-4px;width:44px;height:44px;max-width:none}
+.pillbtn::after{content:'';position:absolute;inset:-4px}
+.app .pillbtn:disabled{opacity:.5}

@@ -1,0 +1,16 @@
+{"v":3,"createdOnFiles":{"v":1,"at":"2026-10-02T09:00:00Z"},"title":"Responsive Canvas Resume Builder — Wireframe","launch":{"view":"canvas"},"pages":[],
+"boards":{
+"Main.dc.html":{"x":0,"y":0,"w":1440,"h":900,"title":"Desktop · 1440 × 900 (≥1024: wheel scroll-jacking, fit-to-height)","expand":"fill","is_interactive":true},
+"Laptop.dc.html":{"x":1520,"y":0,"w":1024,"h":768,"title":"Laptop · 1024 × 768 (desktop threshold)","is_interactive":true},
+"Tablet.dc.html":{"x":0,"y":1320,"w":820,"h":1180,"title":"Tablet · 820 × 1180 (768–1023: scaled desktop canvas, touch swipe)","is_interactive":true},
+"Unfolded.dc.html":{"x":900,"y":1320,"w":890,"h":626,"title":"Foldable unfolded · 890 × 626 @3x (tablet rules)","is_interactive":true},
+"Folded.dc.html":{"x":1870,"y":1320,"w":466,"h":678,"title":"Foldable folded · 466 × 678 @3x (mobile rules)","is_interactive":true},
+"Mobile.dc.html":{"x":2416,"y":1320,"w":390,"h":844,"title":"Mobile · 390 × 844 (≤767: mobile canvas, swipe + bottom sheets)","is_interactive":true}
+},
+"order":["Main.dc.html","Laptop.dc.html","Tablet.dc.html","Unfolded.dc.html","Folded.dc.html","Mobile.dc.html"],
+"notes":{
+"t1":{"x":0,"y":-300,"text":"Desktop & laptop · ≥1024px","kind":"title1","maxW":2544},
+"t2":{"x":0,"y":1040,"text":"Tablet, foldable & mobile · touch-first","kind":"title1","maxW":2806},
+"n1":{"x":-560,"y":0,"w":480,"maxH":620,"fill":"orange","text":"Breakpoints\n• Mobile ≤767: mobile canvas, page fits width, horizontal swipe between layouts, bottom-sheet editing (Edit / Layout / Theme / Zoom).\n• Tablet 768–1023: desktop canvas scaled via transform stage, touch swipe (native scroll-snap), floating bottom panel for layouts + themes. No wheel hijack.\n• Desktop ≥1024: fit-to-height stage, vertical wheel/trackpad = one layout per gesture, floating inspector dock.\n• Folded 466×678 → mobile rules. Unfolded 890×626 → tablet rules. DPR 3x: everything is vector/text, no raster.\n\nAll frames share one resume store (localStorage), so edits in one frame appear in the others."}
+},
+"designSystems":[]}

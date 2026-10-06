@@ -1,0 +1,1340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Canvas Resume Builder</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Merriweather:wght@400;700&amp;family=Playfair+Display:ital,wght@0,500;0,700;1,700&amp;family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&amp;display=swap">
+<style>
+body{margin:0}
+.app,.app *{box-sizing:border-box}
+.app{font-family:'Geist',ui-sans-serif,system-ui,-apple-system,sans-serif;color:#111827;background:#e8eaee;-webkit-font-smoothing:antialiased}
+.app button{font:inherit;color:inherit;cursor:pointer}
+.app button:disabled{opacity:.4;cursor:default}
+.app button:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+
+/* inline canvas fields */
+.ed{display:block;width:100%;min-width:0;margin:0;padding:1px 3px;border:0;border-radius:3px;background:transparent;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;text-align:inherit;line-height:inherit;outline:none}
+.ed::placeholder{color:inherit;opacity:.45}
+.ed:hover{background:rgba(37,99,235,.06)}
+.ed:focus{background:rgba(37,99,235,.07);box-shadow:inset 0 0 0 1px rgba(37,99,235,.65)}
+textarea.ed{resize:none;overflow:hidden;field-sizing:content;min-height:1.45em}
+.edi{display:inline-block;width:11ch;field-sizing:content;min-width:4ch}
+.item{position:relative;break-inside:avoid;page-break-inside:avoid}
+.rowctl{position:absolute;top:-13px;right:0;display:flex;gap:2px;opacity:0;transition:opacity .12s;z-index:3}
+.item:hover>.rowctl,.item:focus-within>.rowctl{opacity:1}
+.ctl{width:22px;height:22px;display:grid;place-items:center;padding:0;border:1px solid #cbd5e1;border-radius:5px;background:#fff;color:#334155;font-family:'Geist',sans-serif;font-size:12px;line-height:1;font-style:normal;font-weight:500;letter-spacing:0;text-transform:none}
+.ctl:hover{background:#f1f5f9}
+.add{display:inline-flex;align-self:flex-start;align-items:center;gap:4px;margin-top:4px;padding:3px 8px;border:1px dashed #94a3b8;border-radius:5px;background:transparent;color:#475569;font-family:'Geist',sans-serif;font-size:10.5px;font-weight:500;font-style:normal;letter-spacing:0;text-transform:none;line-height:1.3}
+.add:hover{border-color:#2563eb;color:#1d4ed8}
+.bul{display:flex;gap:5px;align-items:flex-start}
+.bul>span{flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.chipw{display:inline-flex;align-items:center;border-radius:999px;padding:1px 7px;font-size:10.5px;line-height:1.5}
+.chipw .edi{width:9ch;min-width:5ch;padding:0 1px}
+.mono{font-family:'Geist Mono',ui-monospace,monospace}
+
+/* section title styles per layout */
+.st01{font-family:'Merriweather',Georgia,serif;font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.st02{font-family:'Geist Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.st03{font-family:'Playfair Display',Georgia,serif;font-size:13.5px;font-weight:700;font-style:italic}
+.st04{font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
+.st06{font-family:'Bricolage Grotesque',sans-serif;font-size:30px;font-weight:700;line-height:1.05;letter-spacing:-.02em}
+.st07{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.01em}
+.st08{font-family:'Bricolage Grotesque',sans-serif;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.st10{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.01em}
+.bdg{font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#475569}
+.card10{border:1px solid #e2e8f0;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+
+/* app chrome */
+.bar{flex:none;display:flex;align-items:center;gap:12px;height:56px;padding:0 16px;background:#fff;border-bottom:1px solid #d6d9de}
+.mark{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap}
+.markbox{width:18px;height:24px;border:1.6px solid #111827;border-radius:3px;display:flex;flex-direction:column;gap:2px;padding:4px 3px}
+.markbox i{display:block;height:1.6px;background:#111827;border-radius:1px}
+.tag{font-family:'Geist Mono',monospace;font-size:10.5px;font-weight:500;padding:2px 6px;border-radius:4px;border:1px solid #d1d5db;color:#4b5563;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 12px;border:1px solid #c9ced6;border-radius:8px;background:#fff;font-size:13px;font-weight:500;white-space:nowrap}
+.btn:hover{background:#f3f4f6}
+.btn.tall{height:44px;padding:0 14px}
+.btnp{background:#111827;border-color:#111827;color:#fff !important}
+.btnp:hover{background:#1f2937}
+.btnw{color:#b91c1c !important;border-color:#fca5a5}
+.seg{display:inline-flex;padding:3px;gap:2px;border-radius:9px;background:#eef0f3;border:1px solid #d6d9de}
+.seg button{height:30px;padding:0 10px;border:0;border-radius:6px;background:transparent;font-size:12.5px;font-weight:500;color:#4b5563 !important;white-space:nowrap}
+.seg.big button{height:38px;padding:0 14px;font-size:13px}
+.seg button[aria-pressed="true"]{background:#fff;color:#111827 !important;box-shadow:0 1px 2px rgba(0,0,0,.14)}
+.lbl{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#4b5563}
+.stat{font-size:12px;color:#4b5563;white-space:nowrap}
+.lrow{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:1px solid transparent;border-radius:9px;background:transparent;text-align:left}
+.lrow:hover{background:#f3f4f6}
+.lrow[aria-pressed="true"]{border-color:#111827;background:#fff;box-shadow:inset 0 0 0 1px #111827}
+.sw{display:flex;align-items:center;gap:9px;padding:8px 9px;min-height:44px;border:1px solid #d6d9de;border-radius:9px;background:#fff;font-size:12.5px;font-weight:500;text-align:left;white-space:nowrap}
+.sw:hover{border-color:#9ca3af}
+.sw[aria-pressed="true"]{border-color:#111827;box-shadow:inset 0 0 0 1px #111827}
+.dot{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:0 0 0 2px #fff,0 0 0 3px rgba(0,0,0,.12)}
+.pill{display:inline-flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;flex:none;min-height:52px;padding:6px 12px;border:1px solid #d6d9de;border-radius:10px;background:#fff;text-align:left;white-space:nowrap}
+.pill[aria-pressed="true"]{border-color:#111827;box-shadow:inset 0 0 0 1px #111827}
+.ib{width:44px;height:44px;flex:none;display:grid;place-items:center;padding:0;border:1px solid #c9ced6;border-radius:10px;background:#fff}
+.ib:hover{background:#f3f4f6}
+.hs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hs::-webkit-scrollbar{display:none}
+.stage{position:relative;background-color:#e8eaee;background-image:radial-gradient(#c9cdd4 1px,transparent 1px);background-size:18px 18px}
+.track{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;outline:none}
+.track::-webkit-scrollbar{display:none}
+.slide{flex:none;position:relative;scroll-snap-align:center;scroll-snap-stop:always;transition:opacity .2s ease}
+.page{position:absolute;top:0;left:0;transform-origin:0 0;background:#fff;overflow:hidden;box-shadow:0 1px 2px rgba(15,23,42,.08),0 10px 30px rgba(15,23,42,.14)}
+.hit{position:absolute;inset:0;z-index:6;border:0;padding:0;background:transparent}
+.dots{display:flex;gap:5px;align-items:center}
+.dt{width:6px;height:6px;border-radius:50%;background:#b8bec8;transition:width .2s}
+.dt.on{width:18px;border-radius:3px;background:#111827}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:#92400e;background:#fef3c7;border:1px solid #f59e0b;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.tbb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:52px;border:0;border-radius:10px;background:transparent;font-size:11.5px;font-weight:500}
+.tbb:hover{background:#f3f4f6}
+.fl{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:#374151}
+.fi{width:100%;min-height:44px;padding:10px 12px;border:1px solid #c9ced6;border-radius:9px;background:#fff;font:inherit;font-size:16px;font-weight:400;color:#111827}
+.fi::placeholder{color:#6b7280}
+.fi:focus{outline:2px solid #2563eb;outline-offset:-1px;border-color:#2563eb}
+textarea.fi{resize:none;field-sizing:content;min-height:72px;line-height:1.45}
+textarea.fi.sm{min-height:48px}
+.fcard{border:1px solid #e5e7eb;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+
+@media print{
+  @page{margin:0}
+  body *{visibility:hidden !important}
+  .slide.is-active .page,.slide.is-active .page *{visibility:visible !important}
+  .slide.is-active .page{position:fixed !important;left:0 !important;top:0 !important;transform:none !important;box-shadow:none !important}
+  .noprint,.rowctl,.add,.is-empty{display:none !important}
+  .ed::placeholder{color:transparent !important}
+  .ed{box-shadow:none !important;background:transparent !important}
+}
+</style>
+</helmet>
+
+<div class="app" ref="{{setRoot}}" style="position:relative;height:100dvh;display:flex;flex-direction:column;overflow:hidden">
+
+<!-- ============ TOP BARS ============ -->
+<sc-if value="{{isDesk}}" hint-placeholder-val="{{true}}">
+<header class="bar noprint">
+<div class="mark"><span class="markbox" aria-hidden="true"><i></i><i></i><i style="width:60%"></i></span><span>Canvas Resume</span><span class="tag">Free · No sign-up</span></div>
+<div style="flex:1"></div>
+<span class="stat">{{saveLabel}}</span>
+<div class="seg" role="group" aria-label="Zoom">
+<sc-for list="{{zooms}}" as="z" hint-placeholder-count="4"><button aria-pressed="{{z.pressed}}" onClick="{{z.pick}}">{{z.label}}</button></sc-for>
+</div>
+<div class="seg" role="group" aria-label="Paper size">
+<sc-for list="{{papers}}" as="pp" hint-placeholder-count="2"><button aria-pressed="{{pp.pressed}}" onClick="{{pp.pick}}">{{pp.label}}</button></sc-for>
+</div>
+<button class="btn btnp" onClick="{{doPrint}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>Export PDF</button>
+</header>
+</sc-if>
+
+<sc-if value="{{isTab}}" hint-placeholder-val="{{false}}">
+<header class="bar noprint" style="height:60px">
+<div class="mark"><span class="markbox" aria-hidden="true"><i></i><i></i><i style="width:60%"></i></span><span>Canvas Resume</span></div>
+<div style="flex:1"></div>
+<div class="seg big" role="group" aria-label="Zoom">
+<sc-for list="{{zooms}}" as="z" hint-placeholder-count="2"><button aria-pressed="{{z.pressed}}" onClick="{{z.pick}}">{{z.label}}</button></sc-for>
+</div>
+<div class="seg big" role="group" aria-label="Paper size">
+<sc-for list="{{papers}}" as="pp" hint-placeholder-count="2"><button aria-pressed="{{pp.pressed}}" onClick="{{pp.pick}}">{{pp.label}}</button></sc-for>
+</div>
+<button class="btn btnp tall" onClick="{{doPrint}}">Export PDF</button>
+</header>
+</sc-if>
+
+<sc-if value="{{isMob}}" hint-placeholder-val="{{false}}">
+<header class="bar noprint" style="height:56px;padding:0 10px 0 14px;gap:8px">
+<div class="mark" style="font-size:14px"><span class="markbox" aria-hidden="true"><i></i><i></i><i style="width:60%"></i></span><span>Canvas Resume</span></div>
+<div style="flex:1"></div>
+<sc-if value="{{over}}" hint-placeholder-val="{{false}}"><span class="badge" style="padding:3px 8px;font-size:11px">2+ pages</span></sc-if>
+<button class="ib" onClick="{{doPrint}}" aria-label="Export PDF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg></button>
+</header>
+</sc-if>
+
+<!-- ============ MIDDLE: STAGE + INSPECTOR ============ -->
+<div style="flex:1;min-height:0;display:flex">
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+<div class="stage" ref="{{setStage}}" style="flex:1;min-height:0;{{stageStyle}}">
+<div class="track" ref="{{setTrack}}" onScroll="{{onScroll}}" aria-label="Resume layouts carousel" style="min-height:100%;{{trackStyle}}">
+<div aria-hidden="true" style="flex:none;{{spacerStyle}}"></div>
+<sc-for list="{{pages}}" as="pg" hint-placeholder-count="3">
+<div class="{{pg.slideClass}}" style="flex:none;{{pg.slideStyle}}" onFocus="{{pg.onFocus}}">
+<div class="page" data-scope="page" style="background:#fff;{{pageStyle}}">
+
+<!-- ===== L01 EXECUTIVE CLASSIC ===== -->
+<sc-if value="{{pg.L01}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:60px 68px;display:flex;flex-direction:column;gap:18px;font-family:'Geist',system-ui,sans-serif;font-size:12.5px;line-height:1.5;color:#0f172a">
+<header style="display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center">
+<input class="ed" style="font-family:'Merriweather',Georgia,serif;font-size:30px;font-weight:700;line-height:1.25;text-align:center;color:{{th.p}}" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Full Name" aria-label="Full name">
+<input class="ed" style="font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;text-align:center;color:#334155" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="Title, e.g. Chief Operating Officer" aria-label="Headline">
+<div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:2px 8px;margin-top:4px;font-size:11.5px;color:#334155">
+<input class="ed edi" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email"><span aria-hidden="true">·</span>
+<input class="ed edi" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone"><span aria-hidden="true">·</span>
+<input class="ed edi" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location"><span aria-hidden="true">·</span>
+<input class="ed edi" value="{{b.website}}" onChange="{{h.website}}" placeholder="linkedin.com/in/yourname" aria-label="Website">
+</div>
+</header>
+<section style="display:flex;flex-direction:column;gap:6px">
+<div style="border-bottom:1px solid {{th.p}};padding-bottom:3px"><input class="ed st01" value="{{tt.summary}}" onChange="{{ht.summary}}" placeholder="Section title" aria-label="Section title"></div>
+<textarea class="ed" rows="2" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Executive summary: years in leadership, sectors served and the scale you have owned (P&amp;L, deal value, team size)." aria-label="Summary"></textarea>
+</section>
+<section style="display:flex;flex-direction:column;gap:12px">
+<div style="border-bottom:1px solid {{th.p}};padding-bottom:3px"><input class="ed st01" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title"></div>
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div style="display:flex;align-items:baseline;gap:12px">
+<input class="ed" style="font-weight:700;font-size:13px" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="Title, e.g. Managing Director, Investment Banking" aria-label="Job title">
+<div style="flex:none;display:flex;align-items:baseline;font-size:11.5px;color:#334155"><input class="ed edi" style="text-align:right" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="MMM YYYY" aria-label="Start date"><span>–</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Present" aria-label="End date"></div>
+</div>
+<div style="display:flex;gap:12px;font-style:italic;color:#334155"><input class="ed" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Firm or company" aria-label="Company"><input class="ed" style="flex:none;width:32%;text-align:right" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City, Country" aria-label="Location"></div>
+<div style="margin-top:3px;display:flex;flex-direction:column;gap:1px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">•</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Led a deal, program or turnaround; quantify the outcome ($, %, team size)" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</section>
+<section style="display:flex;flex-direction:column;gap:10px">
+<div style="border-bottom:1px solid {{th.p}};padding-bottom:3px"><input class="ed st01" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title"></div>
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:12px;align-items:baseline"><input class="ed" style="font-weight:700" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="Degree, e.g. JD or MBA" aria-label="Degree"><input class="ed edi" style="flex:none;text-align:right;font-size:11.5px" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY – YYYY" aria-label="Years"></div>
+<div style="display:flex;gap:12px;color:#334155"><input class="ed" style="font-style:italic" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University or law school" aria-label="School"><input class="ed" style="text-align:right" value="{{x.detail}}" onChange="{{x.h.detail}}" placeholder="Honors or bar admission" aria-label="Details"></div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</section>
+<section style="display:flex;flex-direction:column;gap:8px">
+<div style="border-bottom:1px solid {{th.p}};padding-bottom:3px"><input class="ed st01" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title"></div>
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="background:{{th.t}}"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. M&amp;A strategy" aria-label="Competency"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:8px">
+<div style="border-bottom:1px solid {{th.p}};padding-bottom:3px"><input class="ed st01" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title"></div>
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item" style="display:flex;gap:10px;align-items:baseline">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="flex:none;width:34%;font-weight:700" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Board seat or initiative" aria-label="Name">
+<input class="ed" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="One line on your role and the result" aria-label="Description">
+<input class="ed edi" style="flex:none;text-align:right;color:#334155" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="Organization" aria-label="Organization or link">
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add entry</button>
+</section>
+</div>
+</sc-if>
+
+<!-- ===== L02 TECHNICAL MODERN ===== -->
+<sc-if value="{{pg.L02}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;display:grid;grid-template-columns:65fr 35fr;font-family:'Geist',system-ui,sans-serif;font-size:12px;line-height:1.5;color:#0f172a">
+<div style="padding:52px 32px 48px 52px;display:flex;flex-direction:column;gap:20px;min-width:0">
+<header style="display:flex;flex-direction:column;gap:4px">
+<input class="ed" style="font-size:32px;font-weight:700;letter-spacing:-.02em;line-height:1.15" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Full Name" aria-label="Full name">
+<input class="ed" style="font-size:14px;font-weight:500;color:{{th.p}}" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Senior Software Engineer, Platform" aria-label="Headline">
+<textarea class="ed" rows="2" style="margin-top:6px;color:#1e293b" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Engineering focus: languages, systems you build and the scale they run at." aria-label="Summary"></textarea>
+</header>
+<section style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;flex:none;background:{{th.p}}"></span><input class="ed st02" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title"></div>
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div style="display:flex;align-items:baseline;gap:10px"><input class="ed" style="font-weight:600;font-size:13px" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Staff Software Engineer" aria-label="Job title"><div class="mono" style="flex:none;display:flex;align-items:baseline;font-size:10.5px;color:#475569"><input class="ed edi" style="text-align:right" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="YYYY-MM" aria-label="Start date"><span>→</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Present" aria-label="End date"></div></div>
+<div style="display:flex;gap:6px;color:#334155"><input class="ed" style="font-weight:500" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Company" aria-label="Company"><input class="ed" style="flex:none;width:30%;text-align:right" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="Remote / City" aria-label="Location"></div>
+<div style="margin-top:3px;display:flex;flex-direction:column;gap:1px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true" style="color:{{th.p}}">▸</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Built or scaled a system; cite latency, uptime or cost impact" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</section>
+<section style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;flex:none;background:{{th.p}}"></span><input class="ed st02" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title"></div>
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:10px;align-items:baseline"><input class="ed" style="font-weight:600" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Project or open-source repo" aria-label="Project name"><input class="ed edi mono" style="flex:none;font-size:10.5px;color:{{th.p}};text-align:right" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="github.com/you/repo" aria-label="Link"></div>
+<textarea class="ed" rows="1" style="color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Stack, what it does and one usage number" aria-label="Description"></textarea>
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add project</button>
+</section>
+</div>
+<aside style="background:{{th.t}};padding:52px 28px 48px;display:flex;flex-direction:column;gap:22px;min-width:0">
+<section style="display:flex;flex-direction:column;gap:4px;font-size:11.5px">
+<div class="st02" style="padding:0 3px;margin-bottom:4px">Contact</div>
+<input class="ed" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email">
+<input class="ed" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone">
+<input class="ed" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location">
+<input class="ed mono" style="font-size:10.5px" value="{{b.website}}" onChange="{{h.website}}" placeholder="github.com/yourname" aria-label="Website">
+</section>
+<section style="display:flex;flex-direction:column;gap:8px">
+<input class="ed st02" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}} mono" style="background:#fff;border:1px solid #cbd5e1;border-radius:4px"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. TypeScript" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:10px">
+<input class="ed st02" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item" style="display:flex;flex-direction:column">
+<div class="rowctl"><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:600" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. BSc Computer Science" aria-label="Degree">
+<input class="ed" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University" aria-label="School">
+<input class="ed mono" style="font-size:10.5px;color:#475569" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY – YYYY" aria-label="Years">
+<input class="ed" style="font-size:11px;color:#334155" value="{{x.detail}}" onChange="{{x.h.detail}}" placeholder="Relevant coursework or thesis" aria-label="Details">
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</section>
+</aside>
+</div>
+</sc-if>
+
+<!-- ===== L03 MINIMAL IVY ===== -->
+<sc-if value="{{pg.L03}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:56px 64px;display:flex;flex-direction:column;gap:14px;font-family:'Geist',system-ui,sans-serif;font-size:11.5px;line-height:1.42;color:#0f172a">
+<header style="display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;padding-bottom:12px;border-bottom:2px solid {{th.p}}">
+<input class="ed" style="font-family:'Playfair Display',Georgia,serif;font-size:34px;font-weight:700;line-height:1.2;text-align:center" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Full Name" aria-label="Full name">
+<input class="ed" style="font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:14px;text-align:center;color:{{th.p}}" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Engagement Manager, Strategy Consulting" aria-label="Headline">
+<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:2px 8px;margin-top:4px;font-size:11px;color:#334155">
+<input class="ed edi" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email"><span aria-hidden="true">|</span>
+<input class="ed edi" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone"><span aria-hidden="true">|</span>
+<input class="ed edi" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location"><span aria-hidden="true">|</span>
+<input class="ed edi" value="{{b.website}}" onChange="{{h.website}}" placeholder="linkedin.com/in/yourname" aria-label="Website">
+</div>
+</header>
+<section style="display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px;padding-bottom:12px;border-bottom:1px solid #e2e8f0">
+<input class="ed st03" value="{{tt.summary}}" onChange="{{ht.summary}}" placeholder="Title" aria-label="Section title">
+<textarea class="ed" rows="2" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Problem-solving profile: industries, functions and the client questions you answer best." aria-label="Summary"></textarea>
+</section>
+<section style="display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px;padding-bottom:12px;border-bottom:1px solid #e2e8f0">
+<input class="ed st03" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Title" aria-label="Section title">
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:10px;align-items:baseline"><input class="ed" style="font-weight:700" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University" aria-label="School"><input class="ed edi" style="flex:none;text-align:right" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY – YYYY" aria-label="Years"></div>
+<div style="display:flex;gap:10px"><input class="ed" style="font-style:italic" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. PhD, Economics" aria-label="Degree"><input class="ed" style="text-align:right;color:#334155" value="{{x.detail}}" onChange="{{x.h.detail}}" placeholder="Dissertation, honors or GPA" aria-label="Details"></div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</div>
+</section>
+<section style="display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px;padding-bottom:12px;border-bottom:1px solid #e2e8f0">
+<input class="ed st03" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Title" aria-label="Section title">
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div style="display:flex;gap:10px;align-items:baseline"><input class="ed" style="font-weight:700" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Firm and practice area" aria-label="Company"><input class="ed edi" style="flex:none;text-align:right" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City, Country" aria-label="Location"></div>
+<div style="display:flex;gap:10px;align-items:baseline"><input class="ed" style="font-style:italic" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Senior Consultant" aria-label="Job title"><div style="flex:none;display:flex;align-items:baseline"><input class="ed edi" style="text-align:right" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="MMM YYYY" aria-label="Start date"><span>–</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Present" aria-label="End date"></div></div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">–</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Advised a client on a decision; state the value delivered" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</div>
+</section>
+<section style="display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px;padding-bottom:12px;border-bottom:1px solid #e2e8f0">
+<input class="ed st03" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Title" aria-label="Section title">
+<div style="display:flex;flex-direction:column;gap:6px">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:6px;align-items:baseline"><input class="ed" style="font-weight:600" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Publication or research title" aria-label="Title"><input class="ed edi" style="flex:none;font-style:italic;text-align:right" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="Journal or DOI" aria-label="Venue"></div>
+<input class="ed" style="color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Co-authors, year and key finding" aria-label="Description">
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add entry</button>
+</div>
+</section>
+<section style="display:grid;grid-template-columns:118px minmax(0,1fr);gap:14px">
+<input class="ed st03" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Title" aria-label="Section title">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="border:1px solid #cbd5e1"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. Financial modeling" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+</div>
+</sc-if>
+
+<!-- ===== L04 COMPACT PRO ===== -->
+<sc-if value="{{pg.L04}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:40px 44px;display:flex;flex-direction:column;gap:14px;font-family:'Geist',system-ui,sans-serif;font-size:11.5px;line-height:1.38;color:#0f172a">
+<header style="display:flex;flex-direction:column;gap:6px;padding-bottom:10px;border-bottom:3px solid {{th.p}}">
+<div style="display:flex;align-items:baseline;gap:14px"><input class="ed" style="flex:1.2;font-size:26px;font-weight:700;letter-spacing:-.015em;line-height:1.15" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Full Name" aria-label="Full name"><input class="ed" style="flex:1;font-size:13px;font-weight:600;color:{{th.p}};text-align:right" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Operations Manager" aria-label="Headline"></div>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;font-size:10.5px;color:#334155">
+<input class="ed" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email">
+<input class="ed" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone">
+<input class="ed" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location">
+<input class="ed" style="text-align:right" value="{{b.website}}" onChange="{{h.website}}" placeholder="linkedin.com/in/yourname" aria-label="Website">
+</div>
+</header>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;flex:1;min-height:0">
+<section style="display:flex;flex-direction:column;gap:9px;min-width:0">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item" style="padding-bottom:8px;border-bottom:1px solid #e2e8f0">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<input class="ed" style="font-weight:700;font-size:12px" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Senior Project Manager" aria-label="Job title">
+<div style="display:flex;gap:6px;align-items:baseline;font-size:10.5px;color:#334155"><input class="ed" style="font-weight:500" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Company or site" aria-label="Company"><input class="ed edi" style="flex:none;text-align:right" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="MM/YY" aria-label="Start date"><span>–</span><input class="ed edi" style="flex:none" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Present" aria-label="End date"></div>
+<div style="display:flex;flex-direction:column;margin-top:2px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">•</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Cut cost, lead time or defects by a measurable amount" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</section>
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<section style="display:flex;flex-direction:column;gap:6px">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.summary}}" onChange="{{ht.summary}}" placeholder="Section title" aria-label="Section title">
+<textarea class="ed" rows="3" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Operational strengths: sites, budgets and processes you have run." aria-label="Summary"></textarea>
+</section>
+<section style="display:flex;flex-direction:column;gap:6px">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="background:{{th.t}};border-radius:4px"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. Lean Six Sigma" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:6px">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:700" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. BS Industrial Engineering" aria-label="Degree">
+<div style="display:flex;gap:6px;font-size:10.5px;color:#334155"><input class="ed" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University" aria-label="School"><input class="ed edi" style="flex:none;text-align:right" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY" aria-label="Year"></div>
+<input class="ed" style="font-size:10.5px;color:#334155" value="{{x.detail}}" onChange="{{x.h.detail}}" placeholder="Certifications, e.g. PMP, APICS CSCP" aria-label="Details">
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</section>
+<section style="display:flex;flex-direction:column;gap:6px">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:6px;align-items:baseline"><input class="ed" style="font-weight:700" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Program or rollout" aria-label="Name"><input class="ed edi" style="flex:none;font-size:10.5px;text-align:right;color:#334155" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="Scope, e.g. 12 sites" aria-label="Scope"></div>
+<textarea class="ed" rows="1" style="font-size:10.5px;color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Budget, timeline and outcome" aria-label="Description"></textarea>
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add program</button>
+</section>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== L05 OPERATIONS GRID ===== -->
+<sc-if value="{{pg.L05}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:52px 56px;display:flex;flex-direction:column;gap:18px;font-family:'Geist',system-ui,sans-serif;font-size:12px;line-height:1.45;color:#0f172a">
+<header style="display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:24px;align-items:end;padding-bottom:16px;border-bottom:1px solid #cbd5e1">
+<div style="display:flex;flex-direction:column;gap:3px;min-width:0"><input class="ed" style="font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.15" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Full Name" aria-label="Full name"><input class="ed" style="font-size:14px;font-weight:500;color:{{th.p}}" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Senior Product Manager" aria-label="Headline"></div>
+<div style="display:flex;flex-direction:column;font-size:11px;color:#334155;text-align:right"><input class="ed" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email"><input class="ed" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone"><input class="ed" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location"><input class="ed" value="{{b.website}}" onChange="{{h.website}}" placeholder="linkedin.com/in/yourname" aria-label="Website"></div>
+</header>
+<section style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:0 20px">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.summary}}" onChange="{{ht.summary}}" placeholder="Section title" aria-label="Section title">
+<textarea class="ed" rows="2" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Product focus: domains, users and the metrics you move." aria-label="Summary"></textarea>
+</section>
+<section style="display:flex;flex-direction:column;gap:0">
+<div style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:20px;margin-bottom:8px"><input class="ed st04" style="color:{{th.p}}" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title"><span></span></div>
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item" style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:20px">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div class="mono" style="display:flex;flex-direction:column;font-size:10.5px;color:#475569;padding-top:2px"><input class="ed" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="MMM YYYY" aria-label="Start date"><input class="ed" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Present" aria-label="End date"><input class="ed" style="font-family:'Geist',sans-serif;font-size:11px" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City / Remote" aria-label="Location"></div>
+<div style="position:relative;padding:0 0 14px 18px;border-left:2px solid #cbd5e1">
+<span style="position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:{{th.p}};box-shadow:0 0 0 3px #fff"></span>
+<input class="ed" style="font-weight:700;font-size:13px" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Product Manager, Growth" aria-label="Job title">
+<input class="ed" style="color:#334155;font-weight:500" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Company and product area" aria-label="Company">
+<div style="display:flex;flex-direction:column;margin-top:3px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">•</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Shipped a feature or launch; name the metric and the lift" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</div>
+</sc-for>
+<div style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:20px"><span></span><button class="add" style="margin:0" onClick="{{addExp}}">+ Add role</button></div>
+</section>
+<section style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:20px;margin-bottom:8px"><input class="ed st04" style="color:{{th.p}}" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title"><span></span></div>
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item" style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:20px">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed mono" style="font-size:10.5px;color:#475569" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY – YYYY" aria-label="Years">
+<div style="position:relative;padding:0 0 12px 18px;border-left:2px solid #cbd5e1"><span style="position:absolute;left:-6px;top:4px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid {{th.p}}"></span><input class="ed" style="font-weight:700" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. MBA, Technology Management" aria-label="Degree"><div style="display:flex;gap:8px;color:#334155"><input class="ed" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University" aria-label="School"><input class="ed" style="text-align:right" value="{{x.detail}}" onChange="{{x.h.detail}}" placeholder="Concentration or awards" aria-label="Details"></div></div>
+</div>
+</sc-for>
+<div style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:20px"><span></span><button class="add" style="margin:0" onClick="{{addEdu}}">+ Add education</button></div>
+</section>
+<section style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:0 20px">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="background:{{th.t}};border-radius:4px"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. SQL" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+<section style="display:grid;grid-template-columns:25% minmax(0,1fr);gap:0 20px">
+<input class="ed st04" style="color:{{th.p}}" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title">
+<div style="display:flex;flex-direction:column;gap:6px">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:8px;align-items:baseline"><input class="ed" style="font-weight:600" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Launch or analysis name" aria-label="Name"><input class="ed edi" style="flex:none;font-size:11px;color:{{th.p}};text-align:right" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="Link to case study" aria-label="Link"></div>
+<input class="ed" style="color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Problem, your approach and the result" aria-label="Description">
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add project</button>
+</div>
+</section>
+</div>
+</sc-if>
+
+<!-- ===== L06 SWISS EDITORIAL ===== -->
+<sc-if value="{{pg.L06}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:60px 56px;display:flex;flex-direction:column;gap:24px;font-family:'Geist',system-ui,sans-serif;font-size:12px;line-height:1.5;color:#0f172a">
+<header style="display:grid;grid-template-columns:30% minmax(0,1fr);gap:24px">
+<div class="mono" style="display:flex;flex-direction:column;font-size:10.5px;color:#334155;padding-top:8px"><input class="ed" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email"><input class="ed" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone"><input class="ed" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location"><input class="ed" style="color:{{th.p}}" value="{{b.website}}" onChange="{{h.website}}" placeholder="yourportfolio.com" aria-label="Website"></div>
+<div style="display:flex;flex-direction:column;gap:6px;min-width:0"><input class="ed" style="font-family:'Bricolage Grotesque',sans-serif;font-size:50px;font-weight:800;line-height:1;letter-spacing:-.035em" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Name" aria-label="Full name"><input class="ed" style="font-size:16px;font-weight:500;color:{{th.p}}" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Senior Product Designer" aria-label="Headline"><textarea class="ed" rows="2" style="font-size:13px;color:#1e293b;margin-top:4px" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Design point of view: the problems you love and how you partner with product and engineering." aria-label="Summary"></textarea></div>
+</header>
+<section style="display:grid;grid-template-columns:30% minmax(0,1fr);gap:24px;padding-top:14px;border-top:1px solid #0f172a">
+<input class="ed st06" style="color:{{th.p}}" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Title" aria-label="Section title">
+<div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div class="mono" style="display:flex;align-items:baseline;font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.06em"><input class="ed edi" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="YYYY" aria-label="Start date"><span>/</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Now" aria-label="End date"><span style="margin:0 4px">·</span><input class="ed edi" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City" aria-label="Location"></div>
+<input class="ed" style="font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;line-height:1.25" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Lead Product Designer" aria-label="Job title">
+<input class="ed" style="color:#334155;font-weight:500" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Studio or company" aria-label="Company">
+<div style="display:flex;flex-direction:column;margin-top:3px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">—</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Redesigned a flow or system; show the effect on users or the business" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</div>
+</section>
+<section style="display:grid;grid-template-columns:30% minmax(0,1fr);gap:24px;padding-top:14px;border-top:1px solid #0f172a">
+<input class="ed st06" style="color:{{th.p}}" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Title" aria-label="Section title">
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 20px;align-content:start">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:700" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Case study title" aria-label="Name">
+<input class="ed mono" style="font-size:10px;color:{{th.p}}" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="portfolio.com/case-study" aria-label="Link">
+<textarea class="ed" rows="2" style="color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Role, team and outcome" aria-label="Description"></textarea>
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add case study</button>
+</div>
+</section>
+<section style="display:grid;grid-template-columns:30% minmax(0,1fr);gap:24px;padding-top:14px;border-top:1px solid #0f172a">
+<input class="ed st06" style="color:{{th.p}}" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Title" aria-label="Section title">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="border:1px solid #0f172a"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. Figma" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item" style="display:flex;gap:10px;align-items:baseline">
+<div class="rowctl"><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:700" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. BFA Interaction Design" aria-label="Degree"><input class="ed" style="color:#334155" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="School" aria-label="School"><input class="ed edi mono" style="flex:none;font-size:10px;text-align:right" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY" aria-label="Year">
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</div>
+</section>
+</div>
+</sc-if>
+
+<!-- ===== L07 STUDIO SPLIT ===== -->
+<sc-if value="{{pg.L07}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;display:grid;grid-template-columns:33% minmax(0,1fr);font-family:'Geist',system-ui,sans-serif;font-size:12px;line-height:1.5;color:#0f172a">
+<aside style="background:{{th.t}};padding:48px 26px;display:flex;flex-direction:column;gap:24px;min-width:0">
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="width:56px;height:56px;border-radius:50%;background:{{th.p}};margin:0 0 6px 3px" aria-hidden="true"></span>
+<textarea class="ed" rows="2" style="font-family:'Bricolage Grotesque',sans-serif;font-size:28px;font-weight:800;line-height:1.05;letter-spacing:-.03em" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Name" aria-label="Full name"></textarea>
+<input class="ed" style="font-size:13px;font-weight:600" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Brand Strategist" aria-label="Headline">
+</div>
+<section style="display:flex;flex-direction:column;gap:2px;font-size:11.5px">
+<div class="bdg" style="padding:0 3px;margin-bottom:4px;color:#334155">Contact</div>
+<input class="ed" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email">
+<input class="ed" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone">
+<input class="ed" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location">
+<input class="ed" style="font-weight:600" value="{{b.website}}" onChange="{{h.website}}" placeholder="yourstudio.com" aria-label="Website">
+</section>
+<section style="display:flex;flex-direction:column;gap:6px">
+<input class="ed bdg" style="color:#334155" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="background:#fff"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. Brand positioning" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:8px">
+<input class="ed bdg" style="color:#334155" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item" style="display:flex;flex-direction:column">
+<div class="rowctl"><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:700" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. BA Communications" aria-label="Degree">
+<input class="ed" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University" aria-label="School">
+<input class="ed" style="font-size:11px;color:#334155" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY – YYYY" aria-label="Years">
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</section>
+</aside>
+<div style="padding:48px 40px;display:flex;flex-direction:column;gap:22px;min-width:0">
+<section style="display:flex;flex-direction:column;gap:6px">
+<input class="ed st07" style="color:{{th.p}}" value="{{tt.summary}}" onChange="{{ht.summary}}" placeholder="Section title" aria-label="Section title">
+<textarea class="ed" rows="3" style="font-size:13px" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="What brands hire you for: positioning, campaigns and the audiences you know best." aria-label="Summary"></textarea>
+</section>
+<section style="display:flex;flex-direction:column;gap:14px">
+<input class="ed st07" style="color:{{th.p}}" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div style="display:flex;gap:10px;align-items:baseline"><input class="ed" style="font-weight:700;font-size:13.5px" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Creative Producer" aria-label="Job title"><div style="flex:none;display:flex;align-items:baseline;font-size:11px;color:#475569"><input class="ed edi" style="text-align:right" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="YYYY" aria-label="Start date"><span>–</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Now" aria-label="End date"></div></div>
+<div style="display:flex;gap:8px;color:#334155"><input class="ed" style="font-weight:500" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Agency or brand" aria-label="Company"><input class="ed" style="flex:none;width:30%;text-align:right" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City" aria-label="Location"></div>
+<div style="display:flex;flex-direction:column;margin-top:3px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true" style="width:5px;height:5px;margin-top:7px;border-radius:50%;background:{{th.p}}"></span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Shaped a campaign or rebrand; cite reach, awareness or awards" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</section>
+<section style="display:flex;flex-direction:column;gap:10px">
+<input class="ed st07" style="color:{{th.p}}" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:8px;align-items:baseline"><input class="ed" style="font-weight:700" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Campaign or brand name" aria-label="Name"><input class="ed edi" style="flex:none;font-size:11px;color:{{th.p}};font-weight:600;text-align:right" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="Link to work" aria-label="Link"></div>
+<input class="ed" style="color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Brief, idea and result" aria-label="Description">
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add work</button>
+</section>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== L08 TYPOGRAPHIC BOLD ===== -->
+<sc-if value="{{pg.L08}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:52px 56px;display:flex;flex-direction:column;gap:18px;font-family:'Geist',system-ui,sans-serif;font-size:12px;line-height:1.5;color:#0f172a">
+<header style="display:flex;flex-direction:column;gap:6px">
+<input class="ed" style="font-family:'Bricolage Grotesque',sans-serif;font-size:56px;font-weight:800;line-height:1;letter-spacing:-.04em" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Name" aria-label="Full name">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px"><input class="ed edi" style="font-size:14px;font-weight:600;color:{{th.p}};min-width:14ch" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Senior Copywriter" aria-label="Headline"><span class="mono" style="display:flex;flex-wrap:wrap;gap:2px 8px;font-size:10.5px;color:#334155"><input class="ed edi" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email"><input class="ed edi" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone"><input class="ed edi" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location"><input class="ed edi" value="{{b.website}}" onChange="{{h.website}}" placeholder="yourwriting.com" aria-label="Website"></span></div>
+</header>
+<div style="height:8px;background:{{th.p}}"></div>
+<textarea class="ed" rows="2" style="font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:500;line-height:1.22;letter-spacing:-.015em" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Write a one-line manifesto: what you make, for whom, and why it matters." aria-label="Hero statement"></textarea>
+<section style="display:flex;flex-direction:column;gap:10px;padding-top:10px;border-top:3px solid #0f172a">
+<input class="ed st08" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title">
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 24px">
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<input class="ed" style="font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;line-height:1.2" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Copy Lead" aria-label="Job title">
+<input class="ed" style="font-weight:600;color:{{th.p}}" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Agency, publication or brand" aria-label="Company">
+<div class="mono" style="display:flex;align-items:baseline;font-size:10px;color:#475569"><input class="ed edi" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="YYYY" aria-label="Start date"><span>—</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Now" aria-label="End date"><span style="margin:0 4px">/</span><input class="ed edi" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City" aria-label="Location"></div>
+<div style="display:flex;flex-direction:column;margin-top:3px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">+</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Wrote a line, campaign or story; note reach or award" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</section>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px">
+<section style="display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:3px solid #0f172a">
+<input class="ed st08" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:700" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Campaign, article or book" aria-label="Name">
+<div style="display:flex;gap:6px;color:#334155"><input class="ed" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Your role and where it ran" aria-label="Description"><input class="ed edi mono" style="flex:none;font-size:10px;text-align:right" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="Publication" aria-label="Publication or link"></div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addProject}}">+ Add work</button>
+</section>
+<div style="display:flex;flex-direction:column;gap:16px">
+<section style="display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:3px solid #0f172a">
+<input class="ed st08" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="background:{{th.t}}"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. Long-form editing" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:3px solid #0f172a">
+<input class="ed st08" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:700" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. MFA Creative Writing" aria-label="Degree">
+<div style="display:flex;gap:6px;color:#334155"><input class="ed" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University" aria-label="School"><input class="ed edi" style="flex:none;text-align:right" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY" aria-label="Year"></div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</section>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== L09 PORTFOLIO LINK ===== -->
+<sc-if value="{{pg.L09}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:48px 52px;display:flex;flex-direction:column;gap:20px;font-family:'Geist',system-ui,sans-serif;font-size:12px;line-height:1.5;color:#0f172a">
+<header style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px">
+<div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0"><input class="ed" style="font-family:'Bricolage Grotesque',sans-serif;font-size:36px;font-weight:800;line-height:1.05;letter-spacing:-.03em" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Name" aria-label="Full name"><input class="ed" style="font-size:14px;font-weight:500;color:#334155" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Design Engineer" aria-label="Headline"></div>
+<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;font-size:11px;color:#334155">
+<span class="chipw mono" style="background:{{th.p}};color:#fff;font-size:11px;padding:2px 10px"><input class="ed edi" value="{{b.website}}" onChange="{{h.website}}" placeholder="yoursite.dev" aria-label="Website"></span>
+<input class="ed edi" style="text-align:right" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" aria-label="Email">
+<div style="display:flex"><input class="ed edi" style="text-align:right" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone"><span>·</span><input class="ed edi" value="{{b.location}}" onChange="{{h.location}}" placeholder="City" aria-label="Location"></div>
+</div>
+</header>
+<textarea class="ed" rows="2" style="font-size:13px;color:#1e293b" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="What you build where design meets code: tools, stack and craft." aria-label="Summary"></textarea>
+<section style="display:flex;flex-direction:column;gap:10px">
+<input class="ed st02" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title">
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item" style="border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px">
+<div class="rowctl" style="top:-11px;right:8px"><button class="ctl" onClick="{{x.up}}" aria-label="Move left">←</button><button class="ctl" onClick="{{x.down}}" aria-label="Move right">→</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="height:72px;border-radius:6px;background:{{th.t}};display:grid;place-items:center;font-size:10px;color:#475569" class="mono">[ project thumbnail ]</div>
+<input class="ed" style="font-size:14px;font-weight:700" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Project name" aria-label="Project name">
+<span class="chipw mono" style="align-self:flex-start;background:{{th.t}};color:#0f172a;font-size:10px"><span aria-hidden="true">↗</span><input class="ed edi" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="yoursite.dev/project" aria-label="Live link"></span>
+<textarea class="ed" rows="2" style="color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="What it does, your role and the stack" aria-label="Description"></textarea>
+</div>
+</sc-for>
+</div>
+<button class="add" onClick="{{addProject}}">+ Add project</button>
+</section>
+<section style="display:flex;flex-direction:column;gap:8px">
+<input class="ed st02" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title">
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}} mono" style="border:1px solid {{th.p}};border-radius:4px"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. React" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</section>
+<section style="display:flex;flex-direction:column;gap:10px">
+<input class="ed st02" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div style="display:flex;gap:6px;align-items:baseline"><input class="ed edi" style="font-weight:700;font-size:13px;min-width:12ch" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Frontend Engineer" aria-label="Job title"><span style="color:#475569">@</span><input class="ed" style="font-weight:500" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Company" aria-label="Company"><div class="mono" style="flex:none;display:flex;font-size:10px;color:#475569"><input class="ed edi" style="text-align:right" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="YYYY" aria-label="Start date"><span>–</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Now" aria-label="End date"></div></div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">•</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Built a component, tool or experience; cite adoption or performance" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</section>
+<section style="display:flex;flex-direction:column;gap:6px">
+<input class="ed st02" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title">
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item" style="display:flex;gap:8px;align-items:baseline">
+<div class="rowctl"><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:600" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. BS Computer Science" aria-label="Degree"><input class="ed" style="color:#334155" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University" aria-label="School"><input class="ed edi mono" style="flex:none;font-size:10px;text-align:right" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY" aria-label="Year">
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</section>
+</div>
+</sc-if>
+
+<!-- ===== L10 ASYMMETRIC NEO ===== -->
+<sc-if value="{{pg.L10}}" hint-placeholder-val="{{false}}">
+<div style="height:100%;padding:36px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:min-content;gap:12px;align-content:start;font-family:'Geist',system-ui,sans-serif;font-size:11.5px;line-height:1.45;color:#0f172a">
+<div class="card10" style="grid-column:span 4;justify-content:flex-end;min-height:150px">
+<span class="bdg">00 — Index</span>
+<input class="ed" style="font-family:'Bricolage Grotesque',sans-serif;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.035em" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your Name" aria-label="Full name">
+<input class="ed" style="font-size:14px;font-weight:600;color:{{th.p}}" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="e.g. Founder &amp; Creative Director" aria-label="Headline">
+</div>
+<div class="card10" style="grid-column:span 2;background:{{th.t}};border-color:transparent;border-top:4px solid {{th.p}}">
+<span class="bdg">01 — Contact</span>
+<div style="display:flex;flex-direction:column"><input class="ed" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@studio.com" aria-label="Email"><input class="ed" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" aria-label="Phone"><input class="ed" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country" aria-label="Location"><input class="ed" style="font-weight:600" value="{{b.website}}" onChange="{{h.website}}" placeholder="yourstudio.com" aria-label="Website"></div>
+</div>
+<div class="card10" style="grid-column:span 6">
+<div style="display:flex;align-items:center;gap:8px"><span class="bdg">02 —</span><input class="ed bdg" value="{{tt.summary}}" onChange="{{ht.summary}}" placeholder="Section title" aria-label="Section title"></div>
+<textarea class="ed" rows="2" style="font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:500;line-height:1.3" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="Your studio story: what you founded, who you serve and what you are known for." aria-label="Summary"></textarea>
+</div>
+<div class="card10" style="grid-column:span 4;gap:12px">
+<div style="display:flex;align-items:center;gap:8px"><span class="bdg">03 —</span><input class="ed st10" value="{{tt.exp}}" onChange="{{ht.exp}}" placeholder="Section title" aria-label="Section title"></div>
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="item" style="padding-top:10px;border-top:1px dashed #cbd5e1">
+<div class="rowctl" style="top:-1px"><button class="ctl" onClick="{{x.addBullet}}" aria-label="Add bullet">+</button><button class="ctl" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ctl" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="chipw mono" style="background:{{th.t}};font-size:9.5px"><input class="ed edi" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="YYYY" aria-label="Start date"><span>→</span><input class="ed edi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Now" aria-label="End date"></span><span class="chipw mono" style="border:1px solid #cbd5e1;font-size:9.5px"><input class="ed edi" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City" aria-label="Location"></span></div>
+<input class="ed" style="font-weight:700;font-size:13.5px;margin-top:4px" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="e.g. Founder" aria-label="Job title">
+<input class="ed" style="color:{{th.p}};font-weight:600" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Studio or venture" aria-label="Company">
+<div style="display:flex;flex-direction:column;margin-top:2px">
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><div class="{{bl.cls}}"><span aria-hidden="true">·</span><textarea class="ed" rows="1" data-bid="{{bl.bid}}" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="Grew a team, client list or revenue; give the number" aria-label="Achievement"></textarea></div></sc-for>
+</div>
+</div>
+</sc-for>
+<button class="add" onClick="{{addExp}}">+ Add role</button>
+</div>
+<div style="grid-column:span 2;display:flex;flex-direction:column;gap:12px;min-width:0">
+<div class="card10">
+<div style="display:flex;align-items:center;gap:8px"><span class="bdg">04 —</span><input class="ed st10" value="{{tt.skills}}" onChange="{{ht.skills}}" placeholder="Section title" aria-label="Section title"></div>
+<div class="chips"><sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><span class="{{k.cls}}" style="background:{{th.t}}"><input class="ed edi" data-sid="{{k.sid}}" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="e.g. Creative direction" aria-label="Skill"></span></sc-for><button class="add" style="margin-top:0" onClick="{{addSkill}}">+ Skill</button></div>
+</div>
+<div class="card10">
+<div style="display:flex;align-items:center;gap:8px"><span class="bdg">05 —</span><input class="ed st10" value="{{tt.edu}}" onChange="{{ht.edu}}" placeholder="Section title" aria-label="Section title"></div>
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="item" style="display:flex;flex-direction:column">
+<div class="rowctl"><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<input class="ed" style="font-weight:700" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. BA Design" aria-label="Degree">
+<input class="ed" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="School" aria-label="School">
+<input class="ed mono" style="font-size:10px;color:#475569" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY" aria-label="Year">
+<input class="ed" style="font-size:11px;color:#334155" value="{{x.detail}}" onChange="{{x.h.detail}}" placeholder="Awards, talks or press" aria-label="Details">
+</div>
+</sc-for>
+<button class="add" onClick="{{addEdu}}">+ Add education</button>
+</div>
+</div>
+<div class="card10" style="grid-column:span 6">
+<div style="display:flex;align-items:center;gap:8px"><span class="bdg">06 —</span><input class="ed st10" value="{{tt.projects}}" onChange="{{ht.projects}}" placeholder="Section title" aria-label="Section title"></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 18px">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="item">
+<div class="rowctl"><button class="ctl" onClick="{{x.up}}" aria-label="Move left">←</button><button class="ctl" onClick="{{x.down}}" aria-label="Move right">→</button><button class="ctl" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<div style="display:flex;gap:6px;align-items:baseline"><input class="ed" style="font-weight:700" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Client or venture" aria-label="Name"><span class="chipw mono" style="flex:none;border:1px solid #cbd5e1;font-size:9.5px"><input class="ed edi" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="link" aria-label="Link"></span></div>
+<input class="ed" style="color:#334155" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="Scope and outcome" aria-label="Description">
+</div>
+</sc-for>
+</div>
+<button class="add" onClick="{{addProject}}">+ Add project</button>
+</div>
+</div>
+</sc-if>
+
+</div>
+<sc-if value="{{pg.notActive}}" hint-placeholder-val="{{false}}"><button class="hit noprint" onClick="{{pg.go}}" aria-label="{{pg.label}}"></button></sc-if>
+</div>
+</sc-for>
+<div aria-hidden="true" style="flex:none;{{spacerStyle}}"></div>
+</div>
+</div>
+
+<!-- carousel navigator -->
+<div class="noprint" style="flex:none;display:flex;align-items:center;justify-content:center;{{navStyle}}">
+<button class="ib" onClick="{{prev}}" disabled="{{atStart}}" aria-label="Previous layout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+<div style="display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0">
+<div style="display:flex;align-items:center;gap:8px;font-size:13px;white-space:nowrap"><span class="tag">{{cur.id}}</span><strong style="font-weight:600">{{cur.name}}</strong><span style="color:#4b5563">{{cur.cat}}</span><span style="color:#4b5563">{{cur.count}}</span></div>
+<div class="dots" aria-hidden="true"><sc-for list="{{layoutsUI}}" as="l" hint-placeholder-count="10"><span class="{{l.dotClass}}"></span></sc-for></div>
+<sc-if value="{{showHint}}" hint-placeholder-val="{{true}}"><span style="font-size:11.5px;color:#4b5563">{{hintText}}</span></sc-if>
+</div>
+<button class="ib" onClick="{{next}}" disabled="{{atEnd}}" aria-label="Next layout"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
+<sc-if value="{{overNotMob}}" hint-placeholder-val="{{false}}"><span class="badge">Content runs past one page</span></sc-if>
+</div>
+</div>
+
+<!-- desktop floating inspector -->
+<sc-if value="{{isDesk}}" hint-placeholder-val="{{true}}">
+<aside class="noprint" aria-label="Inspector" style="width:316px;flex:none;margin:14px 14px 14px 0;background:#fff;border:1px solid #d6d9de;border-radius:14px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 6px 24px rgba(15,23,42,.08)">
+<div style="flex:none;padding:14px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between"><span class="lbl">Inspector</span><span class="tag">{{cur.id}} · {{th.name}}</span></div>
+<div style="flex:1;min-height:0;overflow:auto;padding:14px 14px 18px;display:flex;flex-direction:column;gap:22px">
+<section style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl">Theme</span><span style="font-size:11.5px;color:#4b5563">★ fits {{cur.cat}}</span></div>
+<span style="font-size:11.5px;font-weight:600;color:#374151">Corporate</span>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">
+<sc-for list="{{themesCorp}}" as="t" hint-placeholder-count="4"><button class="sw" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}"><span style="display:flex;flex:none"><span class="dot" style="display:block;{{t.dotStyle}}"></span><span class="dot" style="display:block;{{t.dot2Style}}"></span></span><span style="overflow:hidden;text-overflow:ellipsis">{{t.name}}</span><sc-if value="{{t.rec}}" hint-placeholder-val="{{false}}"><span aria-label="recommended" style="margin-left:auto;font-size:11px">★</span></sc-if></button></sc-for>
+</div>
+<span style="font-size:11.5px;font-weight:600;color:#374151;margin-top:4px">Creative</span>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">
+<sc-for list="{{themesCre}}" as="t" hint-placeholder-count="4"><button class="sw" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}"><span style="display:flex;flex:none"><span class="dot" style="display:block;{{t.dotStyle}}"></span><span class="dot" style="display:block;{{t.dot2Style}}"></span></span><span style="overflow:hidden;text-overflow:ellipsis">{{t.name}}</span><sc-if value="{{t.rec}}" hint-placeholder-val="{{false}}"><span aria-label="recommended" style="margin-left:auto;font-size:11px">★</span></sc-if></button></sc-for>
+</div>
+</section>
+<section style="display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px"><span class="lbl">Layouts</span><span style="font-size:11.5px;color:#4b5563">10 total</span></div>
+<sc-for list="{{layoutsUI}}" as="l" hint-placeholder-count="10"><button class="lrow" aria-pressed="{{l.pressed}}" onClick="{{l.pick}}"><span class="tag" style="flex:none">{{l.id}}</span><span style="display:flex;flex-direction:column;min-width:0;flex:1"><span style="font-size:13px;font-weight:600">{{l.name}}</span><span style="font-size:11.5px;color:#4b5563;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{l.grid}}</span></span><span style="flex:none;font-size:10.5px;color:#4b5563">{{l.catShort}}</span></button></sc-for>
+</section>
+<section style="display:flex;flex-direction:column;gap:8px">
+<span class="lbl">Resume data</span>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px"><button class="btn" onClick="{{loadSample}}">Load sample</button><button class="{{clearClass}}" onClick="{{clearAll}}">{{clearLabel}}</button></div>
+<p style="margin:0;font-size:11.5px;color:#4b5563;line-height:1.45">Edits save on every keystroke. Switching layout or theme never touches your content. Enter adds a bullet or skill; Backspace on an empty one removes it.</p>
+</section>
+</div>
+</aside>
+</sc-if>
+</div>
+
+<!-- ============ TABLET FLOATING BOTTOM PANEL ============ -->
+<sc-if value="{{isTab}}" hint-placeholder-val="{{false}}">
+<div class="noprint" style="flex:none;padding:0 14px 14px">
+<div style="background:#fff;border:1px solid #d6d9de;border-radius:16px;box-shadow:0 8px 28px rgba(15,23,42,.12);padding:10px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:8px">
+<div class="seg big" role="group" aria-label="Panel"><sc-for list="{{tpTabs}}" as="tp" hint-placeholder-count="2"><button aria-pressed="{{tp.pressed}}" onClick="{{tp.pick}}">{{tp.label}}</button></sc-for></div>
+<div style="flex:1"></div>
+<sc-if value="{{over}}" hint-placeholder-val="{{false}}"><span class="badge">2+ pages</span></sc-if>
+<button class="btn tall" onClick="{{loadSample}}">Load sample</button>
+<button class="{{clearClassTall}}" onClick="{{clearAll}}">{{clearLabel}}</button>
+</div>
+<div class="hs">
+<sc-if value="{{tpLayouts}}" hint-placeholder-val="{{true}}">
+<sc-for list="{{layoutsUI}}" as="l" hint-placeholder-count="6"><button class="pill" aria-pressed="{{l.pressed}}" onClick="{{l.pick}}"><span style="font-size:13px;font-weight:600">{{l.name}}</span><span style="font-size:11px;color:#4b5563">{{l.id}} · {{l.cat}}</span></button></sc-for>
+</sc-if>
+<sc-if value="{{tpThemes}}" hint-placeholder-val="{{false}}">
+<sc-for list="{{themesAll}}" as="t" hint-placeholder-count="8"><button class="sw" style="flex:none;min-height:52px;padding:8px 12px" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}"><span style="display:flex"><span class="dot" style="display:block;{{t.dotStyle}}"></span><span class="dot" style="display:block;{{t.dot2Style}}"></span></span><span style="display:flex;flex-direction:column;align-items:flex-start"><span>{{t.name}}</span><span style="font-size:10.5px;color:#4b5563">{{t.cat}}{{t.recLabel}}</span></span></button></sc-for>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ============ MOBILE BOTTOM BAR ============ -->
+<sc-if value="{{isMob}}" hint-placeholder-val="{{false}}">
+<nav class="noprint" aria-label="Editor tools" style="flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));background:#fff;border-top:1px solid #d6d9de">
+<button class="tbb" onClick="{{openEdit}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>Edit</button>
+<button class="tbb" onClick="{{openLayout}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="18" rx="1"></rect><rect x="14" y="3" width="7" height="8" rx="1"></rect><rect x="14" y="15" width="7" height="6" rx="1"></rect></svg>Layout</button>
+<button class="tbb" onClick="{{openTheme}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18"></path><path d="M12 12h9"></path></svg>Theme</button>
+<button class="tbb" onClick="{{toggleZoom}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-4-4"></path><path d="M11 8v6"></path><path d="M8 11h6"></path></svg>{{zoomMobLabel}}</button>
+</nav>
+</sc-if>
+
+<!-- ============ MOBILE BOTTOM SHEET ============ -->
+<sc-if value="{{sheetOpen}}" hint-placeholder-val="{{false}}">
+<div class="noprint" style="position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end">
+<button onClick="{{closeSheet}}" aria-label="Close panel" style="position:absolute;inset:0;border:0;padding:0;background:rgba(17,24,39,.4)"></button>
+<div role="dialog" aria-label="{{sheetTitle}}" data-scope="sheet" style="position:relative;max-height:82%;display:flex;flex-direction:column;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(15,23,42,.18)">
+<div style="flex:none;display:flex;justify-content:center;padding-top:8px"><span style="width:36px;height:4px;border-radius:2px;background:#d1d5db"></span></div>
+<div style="flex:none;display:flex;align-items:center;gap:8px;padding:6px 12px 8px 16px"><strong style="flex:1;font-size:16px">{{sheetTitle}}</strong><button class="ib" onClick="{{closeSheet}}" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div>
+
+<sc-if value="{{sheetEdit}}" hint-placeholder-val="{{true}}">
+<div class="hs" style="flex:none;padding:0 16px 10px;border-bottom:1px solid #e5e7eb">
+<div class="seg big" role="group" aria-label="Section"><sc-for list="{{editTabs}}" as="et" hint-placeholder-count="5"><button aria-pressed="{{et.pressed}}" onClick="{{et.pick}}">{{et.label}}</button></sc-for></div>
+</div>
+<div style="flex:1;min-height:0;overflow:auto;padding:14px 16px 24px;display:flex;flex-direction:column;gap:12px">
+<sc-if value="{{tabProfile}}" hint-placeholder-val="{{true}}">
+<label class="fl">Full name<input class="fi" value="{{b.fullName}}" onChange="{{h.fullName}}" placeholder="Your full name" autocomplete="name"></label>
+<label class="fl">Headline<input class="fi" value="{{b.headline}}" onChange="{{h.headline}}" placeholder="{{mobPh.headline}}"></label>
+<label class="fl">Email<input class="fi" type="email" value="{{b.email}}" onChange="{{h.email}}" placeholder="you@email.com" autocomplete="email"></label>
+<label class="fl">Phone<input class="fi" type="tel" value="{{b.phone}}" onChange="{{h.phone}}" placeholder="+1 (555) 000-0000" autocomplete="tel"></label>
+<label class="fl">Location<input class="fi" value="{{b.location}}" onChange="{{h.location}}" placeholder="City, Country"></label>
+<label class="fl">Website or profile<input class="fi" type="url" value="{{b.website}}" onChange="{{h.website}}" placeholder="{{mobPh.website}}"></label>
+<label class="fl">Summary<textarea class="fi" value="{{b.summary}}" onChange="{{h.summary}}" placeholder="{{mobPh.summary}}"></textarea></label>
+</sc-if>
+<sc-if value="{{tabExp}}" hint-placeholder-val="{{false}}">
+<sc-for list="{{exp}}" as="x" hint-placeholder-count="2">
+<div class="fcard">
+<div style="display:flex;align-items:center;gap:6px"><strong style="flex:1;font-size:13px">Role {{x.num}}</strong><button class="ib" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ib" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ib" onClick="{{x.remove}}" aria-label="Delete role">×</button></div>
+<label class="fl">Job title<input class="fi" value="{{x.role}}" onChange="{{x.h.role}}" placeholder="{{mobPh.role}}"></label>
+<label class="fl">Company<input class="fi" value="{{x.company}}" onChange="{{x.h.company}}" placeholder="Company name"></label>
+<label class="fl">Location<input class="fi" value="{{x.location}}" onChange="{{x.h.location}}" placeholder="City or Remote"></label>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px"><label class="fl">Start<input class="fi" value="{{x.start}}" onChange="{{x.h.start}}" placeholder="MMM YYYY"></label><label class="fl">End<input class="fi" value="{{x.end}}" onChange="{{x.h.end}}" placeholder="Present"></label></div>
+<span class="fl" style="margin-bottom:-2px">Achievements</span>
+<sc-for list="{{x.bl}}" as="bl" hint-placeholder-count="3"><textarea class="fi sm" data-bid="{{bl.bid}}" aria-label="Achievement" value="{{bl.v}}" onChange="{{bl.on}}" onKeyDown="{{bl.key}}" placeholder="{{mobPh.bullet}}"></textarea></sc-for>
+<button class="btn tall" onClick="{{x.addBullet}}">+ Add achievement</button>
+</div>
+</sc-for>
+<button class="btn btnp tall" onClick="{{addExp}}">+ Add role</button>
+</sc-if>
+<sc-if value="{{tabEdu}}" hint-placeholder-val="{{false}}">
+<sc-for list="{{edu}}" as="x" hint-placeholder-count="1">
+<div class="fcard">
+<div style="display:flex;align-items:center;gap:6px"><strong style="flex:1;font-size:13px">Education {{x.num}}</strong><button class="ib" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<label class="fl">Degree<input class="fi" value="{{x.degree}}" onChange="{{x.h.degree}}" placeholder="e.g. MBA, Finance"></label>
+<label class="fl">School<input class="fi" value="{{x.school}}" onChange="{{x.h.school}}" placeholder="University"></label>
+<label class="fl">Years<input class="fi" value="{{x.year}}" onChange="{{x.h.year}}" placeholder="YYYY – YYYY"></label>
+<label class="fl">Details<input class="fi" value="{{x.detail}}" onChange="{{x.h.detail}}" placeholder="Honors, GPA or thesis (optional)"></label>
+</div>
+</sc-for>
+<button class="btn btnp tall" onClick="{{addEdu}}">+ Add education</button>
+</sc-if>
+<sc-if value="{{tabSkills}}" hint-placeholder-val="{{false}}">
+<sc-for list="{{skills}}" as="k" hint-placeholder-count="6"><div style="display:flex;gap:8px"><input class="fi" data-sid="{{k.sid}}" aria-label="Skill" value="{{k.v}}" onChange="{{k.on}}" onKeyDown="{{k.key}}" placeholder="{{mobPh.skill}}"><button class="ib" onClick="{{k.remove}}" aria-label="Remove skill">×</button></div></sc-for>
+<button class="btn btnp tall" onClick="{{addSkill}}">+ Add skill</button>
+</sc-if>
+<sc-if value="{{tabProjects}}" hint-placeholder-val="{{false}}">
+<sc-for list="{{projects}}" as="x" hint-placeholder-count="2">
+<div class="fcard">
+<div style="display:flex;align-items:center;gap:6px"><strong style="flex:1;font-size:13px">Project {{x.num}}</strong><button class="ib" onClick="{{x.up}}" aria-label="Move up">↑</button><button class="ib" onClick="{{x.down}}" aria-label="Move down">↓</button><button class="ib" onClick="{{x.remove}}" aria-label="Delete">×</button></div>
+<label class="fl">Name<input class="fi" value="{{x.name}}" onChange="{{x.h.name}}" placeholder="Project or initiative name"></label>
+<label class="fl">Link<input class="fi" value="{{x.link}}" onChange="{{x.h.link}}" placeholder="yoursite.com/project"></label>
+<label class="fl">Description<textarea class="fi sm" value="{{x.desc}}" onChange="{{x.h.desc}}" placeholder="What it is, your role and the outcome"></textarea></label>
+</div>
+</sc-for>
+<button class="btn btnp tall" onClick="{{addProject}}">+ Add project</button>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetLayout}}" hint-placeholder-val="{{false}}">
+<div style="flex:1;min-height:0;overflow:auto;padding:4px 16px 24px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span class="lbl">Paper</span><div class="seg big" role="group" aria-label="Paper size"><sc-for list="{{papers}}" as="pp" hint-placeholder-count="2"><button aria-pressed="{{pp.pressed}}" onClick="{{pp.pick}}">{{pp.label}}</button></sc-for></div></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<sc-for list="{{layoutsUI}}" as="l" hint-placeholder-count="10"><button class="pill" style="width:100%;white-space:normal" aria-pressed="{{l.pressed}}" onClick="{{l.pickClose}}"><span style="font-size:13px;font-weight:600">{{l.name}}</span><span style="font-size:11px;color:#4b5563">{{l.id}} · {{l.cat}}</span></button></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px"><button class="btn tall" onClick="{{loadSample}}">Load sample</button><button class="{{clearClassTall}}" onClick="{{clearAll}}">{{clearLabel}}</button></div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheetTheme}}" hint-placeholder-val="{{false}}">
+<div style="flex:1;min-height:0;overflow:auto;padding:4px 16px 24px;display:flex;flex-direction:column;gap:8px">
+<span style="font-size:12.5px;color:#4b5563">★ recommended for {{cur.cat}} layouts</span>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+<sc-for list="{{themesAll}}" as="t" hint-placeholder-count="8"><button class="sw" style="min-height:52px" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}"><span style="display:flex;flex:none"><span class="dot" style="display:block;{{t.dotStyle}}"></span><span class="dot" style="display:block;{{t.dot2Style}}"></span></span><span style="display:flex;flex-direction:column;align-items:flex-start;min-width:0"><span>{{t.name}}</span><span style="font-size:10.5px;color:#4b5563">{{t.cat}}{{t.recLabel}}</span></span></button></sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+var KEY = 'canvas-resume-builder:v1';
+var LAYOUTS = [
+  {id:'L01',name:'Executive Classic',cat:'Corporate',grid:'Single column, centered header',ph:{headline:'Title, e.g. Chief Operating Officer',website:'linkedin.com/in/yourname',summary:'Executive summary: years in leadership, sectors and the scale you have owned.',role:'e.g. Managing Director',bullet:'Led a deal or turnaround; quantify the outcome',skill:'e.g. M&A strategy'}},
+  {id:'L02',name:'Technical Modern',cat:'Corporate',grid:'65 / 35 split, right sidebar',ph:{headline:'e.g. Senior Software Engineer',website:'github.com/yourname',summary:'Engineering focus: languages, systems and scale.',role:'e.g. Staff Software Engineer',bullet:'Built or scaled a system; cite latency, uptime or cost',skill:'e.g. TypeScript'}},
+  {id:'L03',name:'Minimal Ivy',cat:'Corporate',grid:'Serif header, dense rows',ph:{headline:'e.g. Engagement Manager',website:'linkedin.com/in/yourname',summary:'Industries, functions and client questions you answer.',role:'e.g. Senior Consultant',bullet:'Advised a client on a decision; state the value',skill:'e.g. Financial modeling'}},
+  {id:'L04',name:'Compact Pro',cat:'Corporate',grid:'Balanced 50 / 50 columns',ph:{headline:'e.g. Operations Manager',website:'linkedin.com/in/yourname',summary:'Sites, budgets and processes you have run.',role:'e.g. Senior Project Manager',bullet:'Cut cost, lead time or defects by a measurable amount',skill:'e.g. Lean Six Sigma'}},
+  {id:'L05',name:'Operations Grid',cat:'Corporate',grid:'Timeline rail, 25 / 75 gutter',ph:{headline:'e.g. Senior Product Manager',website:'linkedin.com/in/yourname',summary:'Domains, users and the metrics you move.',role:'e.g. Product Manager, Growth',bullet:'Shipped a launch; name the metric and the lift',skill:'e.g. SQL'}},
+  {id:'L06',name:'Swiss Editorial',cat:'Creative',grid:'30 / 70, oversized headers',ph:{headline:'e.g. Senior Product Designer',website:'yourportfolio.com',summary:'Your design point of view and how you work.',role:'e.g. Lead Product Designer',bullet:'Redesigned a flow; show the effect on users',skill:'e.g. Figma'}},
+  {id:'L07',name:'Studio Split',cat:'Creative',grid:'Tinted 33% sidebar',ph:{headline:'e.g. Brand Strategist',website:'yourstudio.com',summary:'What brands hire you for and the audiences you know.',role:'e.g. Creative Producer',bullet:'Shaped a campaign; cite reach or awards',skill:'e.g. Brand positioning'}},
+  {id:'L08',name:'Typographic Bold',cat:'Creative',grid:'Hero statement, heavy rules',ph:{headline:'e.g. Senior Copywriter',website:'yourwriting.com',summary:'A one-line manifesto: what you make and why it matters.',role:'e.g. Copy Lead',bullet:'Wrote a campaign or story; note reach or award',skill:'e.g. Long-form editing'}},
+  {id:'L09',name:'Portfolio Link',cat:'Creative',grid:'Project-first, link tags',ph:{headline:'e.g. Design Engineer',website:'yoursite.dev',summary:'What you build where design meets code.',role:'e.g. Frontend Engineer',bullet:'Built a tool or component; cite adoption',skill:'e.g. React'}},
+  {id:'L10',name:'Asymmetric Neo',cat:'Creative',grid:'Modular cards, micro badges',ph:{headline:'e.g. Founder & Creative Director',website:'yourstudio.com',summary:'Your studio story and what you are known for.',role:'e.g. Founder',bullet:'Grew a team, client list or revenue; give the number',skill:'e.g. Creative direction'}}
+];
+var THEMES = [
+  {id:'wall-street',name:'Wall Street',cat:'Corporate',p:'#1e3a8a',s:'#e2e8f0',t:'#e2e8f0'},
+  {id:'terminal-mono',name:'Terminal Mono',cat:'Corporate',p:'#1f2937',s:'#9ca3af',t:'#f3f4f6'},
+  {id:'british-racing',name:'British Racing',cat:'Corporate',p:'#064e3b',s:'#fef3c7',t:'#fef3c7'},
+  {id:'obsidian-black',name:'Obsidian Black',cat:'Corporate',p:'#000000',s:'#71717a',t:'#f4f4f5'},
+  {id:'bauhaus-studio',name:'Bauhaus Studio',cat:'Creative',p:'#2563eb',s:'#fef08a',t:'#fef08a'},
+  {id:'terracotta-calm',name:'Terracotta Calm',cat:'Creative',p:'#c2410c',s:'#f5f5f4',t:'#f5f5f4'},
+  {id:'sage-modern',name:'Sage Modern',cat:'Creative',p:'#0d9488',s:'#f0fdfa',t:'#f0fdfa'},
+  {id:'electric-atelier',name:'Electric Atelier',cat:'Creative',p:'#4338ca',s:'#ede9fe',t:'#ede9fe'}
+];
+function uid(){ return Math.random().toString(36).slice(2, 9); }
+function newItem(list){
+  if (list === 'exp') return {id:uid(), role:'', company:'', location:'', start:'', end:'', bullets:['', '', '']};
+  if (list === 'edu') return {id:uid(), degree:'', school:'', year:'', detail:''};
+  if (list === 'projects') return {id:uid(), name:'', link:'', desc:''};
+  return {id:uid(), v:''};
+}
+function blank(){
+  return {
+    meta:{version:'1.0.0', layout:0, theme:'wall-street', paper:'A4'},
+    basics:{fullName:'', headline:'', email:'', phone:'', location:'', website:'', summary:''},
+    titles:{summary:'Profile', exp:'Experience', edu:'Education', skills:'Skills', projects:'Projects'},
+    exp:[newItem('exp'), newItem('exp')],
+    edu:[newItem('edu')],
+    skills:[0,1,2,3,4,5].map(function(){ return newItem('skills'); }),
+    projects:[newItem('projects'), newItem('projects')]
+  };
+}
+function sample(){
+  return {
+    basics:{fullName:'Alex Mercer', headline:'Senior Product Designer & Design Engineer', email:'alex.mercer@example.com', phone:'+1 (555) 234-5678', location:'San Francisco, CA', website:'alexmercer.design', summary:'Multi-disciplinary designer bridging design systems and frontend code.'},
+    exp:[
+      {id:uid(), role:'Lead Product Designer', company:'Horizon Labs', location:'Remote', start:'Mar 2022', end:'Present', bullets:['Designed and shipped 0-to-1 design system adopted by 14 product squads.', 'Increased canvas interaction speeds by 40% through atomic state optimizations.']},
+      {id:uid(), role:'[Previous role]', company:'[Previous company]', location:'[City]', start:'[MMM YYYY]', end:'[MMM YYYY]', bullets:['[A shipped project and its measurable impact]']}
+    ],
+    edu:[{id:uid(), degree:'[Degree]', school:'[University]', year:'[YYYY – YYYY]', detail:''}],
+    skills:['Design systems','Figma','React','TypeScript','Prototyping','Accessibility'].map(function(v){ return {id:uid(), v:v}; }),
+    projects:[{id:uid(), name:'[Project name]', link:'alexmercer.design', desc:'[What it is, your role and the outcome]'}]
+  };
+}
+function normalize(r){
+  var b = blank();
+  if (!r || typeof r !== 'object') return b;
+  var out = {meta:Object.assign(b.meta, r.meta || {}), basics:Object.assign(b.basics, r.basics || {}), titles:Object.assign(b.titles, r.titles || {})};
+  ['exp','edu','projects','skills'].forEach(function(k){
+    out[k] = Array.isArray(r[k]) ? r[k].map(function(it){ return Object.assign(newItem(k), it || {}); }) : b[k];
+  });
+  out.exp.forEach(function(e){ if (!Array.isArray(e.bullets) || !e.bullets.length) e.bullets = ['']; });
+  out.meta.layout = Math.max(0, Math.min(LAYOUTS.length - 1, out.meta.layout | 0));
+  if (!THEMES.some(function(t){ return t.id === out.meta.theme; })) out.meta.theme = 'wall-street';
+  if (out.meta.paper !== 'Letter') out.meta.paper = 'A4';
+  return out;
+}
+
+class Component extends DCLogic {
+  state = this.initState();
+
+  initState() {
+    var d = null, ok = true;
+    try { var raw = window.localStorage.getItem(KEY); if (raw) d = normalize(JSON.parse(raw)); } catch (e) { ok = false; }
+    this._storeOk = ok;
+    return {d: d || blank(), appW: (typeof window !== 'undefined' && window.innerWidth) || 1280, stageW: 0, stageH: 0, zoom: 'fit', sheet: null, tab: 'profile', tpanel: 'layouts', over: false, confirmClear: false};
+  }
+
+  componentDidMount() {
+    var self = this;
+    this._onStorage = function(e){
+      if (e.key !== KEY || !e.newValue) return;
+      try { var nd = normalize(JSON.parse(e.newValue)); self.setState(function(st){ nd.meta.layout = st.d.meta.layout; return {d: nd}; }); } catch (err) {}
+    };
+    try { window.addEventListener('storage', this._onStorage); } catch (e) {}
+    this.measure();
+  }
+
+  componentWillUnmount() {
+    try { window.removeEventListener('storage', this._onStorage); } catch (e) {}
+    if (this.ro) this.ro.disconnect();
+    if (this.track) this.track.removeEventListener('wheel', this.onWheel);
+    clearTimeout(this._saveT); clearTimeout(this._progT); clearTimeout(this._ccT);
+  }
+
+  componentDidUpdate() {
+    var g = this._geo;
+    if (this.track && g && !g.focus) {
+      var key = g.sw + '|' + g.gap;
+      if (key !== this._alignKey) {
+        this._alignKey = key;
+        this._prog = true;
+        this.track.scrollLeft = this.state.d.meta.layout * (g.sw + g.gap);
+        clearTimeout(this._progT);
+        this._progT = setTimeout(() => { this._prog = false; }, 120);
+      }
+    } else if (g && g.focus) {
+      this._alignKey = null;
+    }
+    this.checkOverflow();
+  }
+
+  /* ---------- refs + measuring ---------- */
+  getRO() {
+    if (!this.ro && typeof ResizeObserver !== 'undefined') this.ro = new ResizeObserver(() => this.measure());
+    return this.ro;
+  }
+  setRoot = (el) => {
+    if (el === this.root) return;
+    this.root = el;
+    var ro = this.getRO(); if (el && ro) ro.observe(el);
+    if (!ro && el) window.addEventListener('resize', () => this.measure());
+  };
+  setStage = (el) => {
+    if (el === this.stage) return;
+    var ro = this.getRO();
+    if (this.stage && ro) ro.unobserve(this.stage);
+    this.stage = el;
+    if (el) { if (ro) ro.observe(el); this.measure(); }
+  };
+  setTrack = (el) => {
+    if (el === this.track) return;
+    if (this.track) this.track.removeEventListener('wheel', this.onWheel);
+    this.track = el;
+    if (el) el.addEventListener('wheel', this.onWheel, {passive: false});
+  };
+  measure() {
+    var r = this.root, s = this.stage; if (!r || !s) return;
+    var appW = Math.round(r.clientWidth), stageW = Math.round(s.clientWidth), stageH = Math.round(s.clientHeight);
+    var st = this.state;
+    if (appW !== st.appW || stageW !== st.stageW || stageH !== st.stageH) this.setState({appW: appW, stageW: stageW, stageH: stageH});
+  }
+  checkOverflow() {
+    if (!this.root) return;
+    var p = this.root.querySelector('.slide.is-active .page');
+    if (!p) return;
+    var over = p.scrollHeight > p.clientHeight + 2;
+    if (over !== this.state.over) this.setState({over: over});
+  }
+
+  /* ---------- carousel ---------- */
+  goTo(i) {
+    i = Math.max(0, Math.min(LAYOUTS.length - 1, i));
+    if (i !== this.state.d.meta.layout) this.setD(function(d){ d.meta.layout = i; });
+    var g = this._geo;
+    if (this.track && g && !g.focus) {
+      this._prog = true;
+      clearTimeout(this._progT);
+      try { this.track.scrollTo({left: i * (g.sw + g.gap), behavior: 'smooth'}); } catch (e) { this.track.scrollLeft = i * (g.sw + g.gap); }
+      this._progT = setTimeout(() => { this._prog = false; }, 700);
+    }
+  }
+  onScroll = () => {
+    if (this._prog) { clearTimeout(this._progT); this._progT = setTimeout(() => { this._prog = false; }, 160); return; }
+    var g = this._geo; if (!g || g.focus || !this.track) return;
+    var i = Math.round(this.track.scrollLeft / (g.sw + g.gap));
+    i = Math.max(0, Math.min(LAYOUTS.length - 1, i));
+    if (i !== this.state.d.meta.layout) this.setD(function(d){ d.meta.layout = i; });
+  };
+  /* Desktop-only scroll-jacking: vertical wheel / trackpad -> one layout per gesture */
+  onWheel = (e) => {
+    var g = this._geo;
+    if (!g || !g.isDesk || g.focus) return;
+    if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; /* native horizontal trackpad swipe + snap */
+    e.preventDefault();
+    if (Math.abs(e.deltaY) < 3) return;
+    var now = Date.now();
+    var newGesture = now - (this._lastWheel || 0) > 220;
+    this._lastWheel = now;
+    if (newGesture || now - (this._lastStep || 0) > 750) {
+      this._lastStep = now;
+      this.goTo(this.state.d.meta.layout + (e.deltaY > 0 ? 1 : -1));
+    }
+  };
+
+  /* ---------- data ---------- */
+  setD(fn, cb) {
+    this.setState((st) => {
+      var d = JSON.parse(JSON.stringify(st.d));
+      fn(d);
+      this.persist(d);
+      return {d: d, confirmClear: false};
+    }, cb);
+  }
+  persist(d) {
+    clearTimeout(this._saveT);
+    this._saveT = setTimeout(() => {
+      try { window.localStorage.setItem(KEY, JSON.stringify(d)); this._storeOk = true; } catch (e) { this._storeOk = false; }
+    }, 180);
+  }
+  setField(list, i, k, v) { this.setD(function(d){ if (d[list][i]) d[list][i][k] = v; }); }
+  move(list, i, dir) { this.setD(function(d){ var a = d[list], j = i + dir; if (j < 0 || j >= a.length) return; var t = a[i]; a[i] = a[j]; a[j] = t; }); }
+  removeItem(list, i) { this.setD(function(d){ d[list].splice(i, 1); }); }
+  addItem(list) { this.setD(function(d){ d[list].push(newItem(list)); }); }
+  focusIn(scope, sel) {
+    try { var el = scope && scope.querySelector(sel); if (el) { el.focus(); var n = (el.value || '').length; if (el.setSelectionRange) el.setSelectionRange(n, n); } } catch (e) {}
+  }
+  bulletKey(e, i, j) {
+    var scope = e.target.closest('[data-scope]');
+    var item = this.state.d.exp[i]; if (!item) return;
+    var v = e.target.value;
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      this.setD(function(d){ d.exp[i].bullets.splice(j + 1, 0, ''); }, () => this.focusIn(scope, '[data-bid="' + item.id + '-' + (j + 1) + '"]'));
+    } else if (e.key === 'Backspace' && v === '' && item.bullets.length > 1) {
+      e.preventDefault();
+      this.setD(function(d){ d.exp[i].bullets.splice(j, 1); }, () => this.focusIn(scope, '[data-bid="' + item.id + '-' + Math.max(0, j - 1) + '"]'));
+    }
+  }
+  skillKey(e, i) {
+    var scope = e.target.closest('[data-scope]');
+    var v = e.target.value;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      this.setD(function(d){ d.skills.splice(i + 1, 0, newItem('skills')); }, () => this.focusIn(scope, '[data-sid="sk-' + (i + 1) + '"]'));
+    } else if (e.key === 'Backspace' && v === '' && this.state.d.skills.length > 1) {
+      e.preventDefault();
+      this.setD(function(d){ d.skills.splice(i, 1); }, () => this.focusIn(scope, '[data-sid="sk-' + Math.max(0, i - 1) + '"]'));
+    }
+  }
+
+  renderVals() {
+    var st = this.state, d = st.d, m = d.meta;
+    var W = st.appW || 1280;
+    var isMob = W <= 767, isTab = !isMob && W <= 1023, isDesk = W > 1023;
+
+    /* stage geometry: true paper proportions, CSS transform scale */
+    var letter = m.paper === 'Letter';
+    var pw = letter ? 816 : 794, ph = letter ? 1056 : 1123;
+    var sW = st.stageW || Math.max(320, W - (isDesk ? 330 : 0)), sH = st.stageH || 600;
+    var fit = isDesk ? Math.min((sH - 40) / ph, (sW * 0.64) / pw)
+            : isTab ? Math.min((sH - 28) / ph, (sW - 120) / pw)
+            : Math.min((sW - 40) / pw, (sH - 20) / ph);
+    fit = Math.max(0.18, fit);
+    var focus = st.zoom !== 'fit';
+    var s = focus ? st.zoom / 100 : fit;
+    var sw = Math.round(pw * s), sh = Math.round(ph * s);
+    var gap = isDesk ? 56 : 20;
+    var pad = Math.max(16, Math.round((sW - sw) / 2));
+    this._geo = {sw: sw, gap: gap, focus: focus, isDesk: isDesk};
+
+    var lay = m.layout, cur = LAYOUTS[lay];
+    var th = THEMES.filter(function(t){ return t.id === m.theme; })[0] || THEMES[0];
+
+    var pages = LAYOUTS.map((l, i) => {
+      var on = i === lay;
+      var o = Object.assign({}, l);
+      o[l.id] = true;
+      o.notActive = !on;
+      o.slideClass = 'slide' + (on ? ' is-active' : '');
+      o.slideStyle = 'width:' + sw + 'px;height:' + sh + 'px;' + (focus && !on ? 'display:none;' : '') + (!focus && !on ? 'opacity:.42;' : '');
+      o.go = () => this.goTo(i);
+      o.onFocus = () => { if (this.state.d.meta.layout !== i) this.goTo(i); };
+      o.label = 'Switch to layout ' + l.id + ', ' + l.name;
+      return o;
+    });
+
+    var b = d.basics, h = {};
+    Object.keys(b).forEach((k) => { h[k] = (e) => { var v = e.target.value; this.setD(function(dd){ dd.basics[k] = v; }); }; });
+    var tt = d.titles, ht = {};
+    Object.keys(tt).forEach((k) => { ht[k] = (e) => { var v = e.target.value; this.setD(function(dd){ dd.titles[k] = v; }); }; });
+
+    var mk = (list, fields) => d[list].map((it, i) => {
+      var o = Object.assign({}, it); o.h = {};
+      fields.forEach((k) => { o.h[k] = (e) => this.setField(list, i, k, e.target.value); });
+      o.up = () => this.move(list, i, -1);
+      o.down = () => this.move(list, i, 1);
+      o.remove = () => this.removeItem(list, i);
+      o.num = String(i + 1).padStart(2, '0');
+      return o;
+    });
+    var exp = mk('exp', ['role','company','location','start','end']).map((o, i) => {
+      var it = d.exp[i];
+      o.bl = it.bullets.map((v, j) => ({
+        v: v, bid: it.id + '-' + j, cls: v ? 'bul' : 'bul is-empty',
+        on: (e) => { var nv = e.target.value; this.setD(function(dd){ dd.exp[i].bullets[j] = nv; }); },
+        key: (e) => this.bulletKey(e, i, j)
+      }));
+      o.addBullet = () => this.setD(function(dd){ dd.exp[i].bullets.push(''); });
+      return o;
+    });
+    var edu = mk('edu', ['degree','school','year','detail']);
+    var projects = mk('projects', ['name','link','desc']);
+    var skills = d.skills.map((k, i) => ({
+      v: k.v, sid: 'sk-' + i, cls: k.v ? 'chipw' : 'chipw is-empty',
+      on: (e) => { var v = e.target.value; this.setD(function(dd){ dd.skills[i].v = v; }); },
+      key: (e) => this.skillKey(e, i),
+      remove: () => this.removeItem('skills', i)
+    }));
+
+    var zoomList = isDesk ? [['fit','Fit'],[75,'75%'],[100,'100%'],[125,'125%']] : [['fit','Fit'],[100,'100%']];
+    var zooms = zoomList.map((z) => ({label: z[1], pressed: String(st.zoom === z[0]), pick: () => this.setState({zoom: z[0]})}));
+    var papers = [['A4','A4'],['Letter','US Letter']].map((p) => ({label: p[1], pressed: String(m.paper === p[0]), pick: () => this.setD(function(dd){ dd.meta.paper = p[0]; })}));
+    var layoutsUI = LAYOUTS.map((l, i) => Object.assign({}, l, {
+      pressed: String(i === lay), dotClass: i === lay ? 'dt on' : 'dt', catShort: l.cat === 'Corporate' ? 'CORP' : 'CREA',
+      pick: () => this.goTo(i),
+      pickClose: () => { this.setState({sheet: null}); this.goTo(i); }
+    }));
+    var themeUI = THEMES.map((t) => Object.assign({}, t, {
+      pressed: String(t.id === m.theme),
+      pick: () => this.setD(function(dd){ dd.meta.theme = t.id; }),
+      dotStyle: 'background:' + t.p,
+      dot2Style: 'background:' + t.t + ';margin-left:-7px',
+      rec: t.cat === cur.cat,
+      recLabel: t.cat === cur.cat ? ' · ★' : ''
+    }));
+
+    var sheet = st.sheet;
+    var clearAll = () => {
+      if (!this.state.confirmClear) {
+        this.setState({confirmClear: true});
+        clearTimeout(this._ccT);
+        this._ccT = setTimeout(() => this.setState({confirmClear: false}), 3500);
+        return;
+      }
+      var keep = JSON.parse(JSON.stringify(this.state.d.meta));
+      this.setD(function(dd){ var nb = blank(); nb.meta = keep; Object.keys(nb).forEach(function(k){ dd[k] = nb[k]; }); });
+    };
+
+    return {
+      isDesk: isDesk, isTab: isTab, isMob: isMob,
+      setRoot: this.setRoot, setStage: this.setStage, setTrack: this.setTrack, onScroll: this.onScroll,
+      stageStyle: focus ? 'overflow:auto;' : 'overflow:hidden;',
+      trackStyle: focus
+        ? 'overflow:visible;scroll-snap-type:none;width:max-content;min-width:100%;justify-content:center;align-items:flex-start;padding:24px 16px;'
+        : 'height:100%;align-items:center;gap:' + gap + 'px;',
+      spacerStyle: focus ? 'display:none;' : 'width:' + Math.max(0, pad - gap) + 'px;height:1px;',
+      pageStyle: 'width:' + pw + 'px;height:' + ph + 'px;transform:scale(' + s.toFixed(4) + ');',
+      navStyle: isMob ? 'gap:10px;padding:6px 10px;' : 'gap:18px;padding:8px 16px 10px;',
+      pages: pages, th: th, b: b, h: h, tt: tt, ht: ht,
+      exp: exp, edu: edu, projects: projects, skills: skills,
+      addExp: () => this.addItem('exp'), addEdu: () => this.addItem('edu'), addProject: () => this.addItem('projects'), addSkill: () => this.addItem('skills'),
+      zooms: zooms, papers: papers,
+      doPrint: () => { try { window.print(); } catch (e) {} },
+      saveLabel: this._storeOk ? 'Autosaved in this browser' : 'Storage off: edits last this session',
+      cur: {id: cur.id, name: cur.name, cat: cur.cat, count: (lay + 1) + ' / ' + LAYOUTS.length},
+      prev: () => this.goTo(lay - 1), next: () => this.goTo(lay + 1),
+      atStart: lay === 0, atEnd: lay === LAYOUTS.length - 1,
+      showHint: !isMob,
+      hintText: isDesk ? (focus ? 'Zoomed: use arrows to switch layout' : 'Scroll or swipe to browse layouts · click any text to edit') : 'Swipe to browse layouts · tap any text to edit',
+      layoutsUI: layoutsUI,
+      themesCorp: themeUI.filter(function(t){ return t.cat === 'Corporate'; }),
+      themesCre: themeUI.filter(function(t){ return t.cat === 'Creative'; }),
+      themesAll: themeUI,
+      loadSample: () => this.setD(function(dd){ var sm = sample(); ['basics','exp','edu','skills','projects'].forEach(function(k){ dd[k] = sm[k]; }); }),
+      clearAll: clearAll,
+      clearLabel: st.confirmClear ? 'Tap again to clear' : 'Clear all',
+      clearClass: st.confirmClear ? 'btn btnw' : 'btn',
+      clearClassTall: st.confirmClear ? 'btn tall btnw' : 'btn tall',
+      over: st.over, overNotMob: st.over && !isMob,
+      tpTabs: [['layouts','Layouts'],['themes','Themes']].map((tp) => ({label: tp[1], pressed: String(st.tpanel === tp[0]), pick: () => this.setState({tpanel: tp[0]})})),
+      tpLayouts: st.tpanel === 'layouts', tpThemes: st.tpanel === 'themes',
+      sheetOpen: isMob && !!sheet, sheetEdit: sheet === 'edit', sheetLayout: sheet === 'layout', sheetTheme: sheet === 'theme',
+      sheetTitle: sheet === 'edit' ? 'Edit content' : sheet === 'layout' ? 'Layout & paper' : sheet === 'theme' ? 'Theme' : '',
+      openEdit: () => this.setState({sheet: 'edit'}), openLayout: () => this.setState({sheet: 'layout'}), openTheme: () => this.setState({sheet: 'theme'}),
+      closeSheet: () => this.setState({sheet: null}),
+      editTabs: [['profile','Profile'],['exp','Experience'],['edu','Education'],['skills','Skills'],['projects','Projects']].map((t) => ({label: t[1], pressed: String(st.tab === t[0]), pick: () => this.setState({tab: t[0]})})),
+      tabProfile: st.tab === 'profile', tabExp: st.tab === 'exp', tabEdu: st.tab === 'edu', tabSkills: st.tab === 'skills', tabProjects: st.tab === 'projects',
+      mobPh: cur.ph,
+      toggleZoom: () => this.setState({zoom: st.zoom === 'fit' ? 100 : 'fit'}),
+      zoomMobLabel: st.zoom === 'fit' ? '100%' : 'Fit'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+/* Ported from the wireframe's @media print block.
+   The @page size rule is injected at runtime from meta.paper (components/PrintPageSize.tsx). */
+@media print {
+  @page { margin: 0; }
+  html, body, #root { height: auto !important; overflow: visible !important; background: #fff !important; }
+  .app { height: auto !important; overflow: visible !important; background: #fff !important; }
+  body * { visibility: hidden !important; }
+  .slide.is-active .page,
+  .slide.is-active .page * { visibility: visible !important; }
+  .slide.is-active .page {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .noprint, .rowctl, .add, .is-empty { display: none !important; }
+  .ed::placeholder { color: transparent !important; }
+  .ed { box-shadow: none !important; background: transparent !important; }
+  .item { break-inside: avoid; page-break-inside: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
