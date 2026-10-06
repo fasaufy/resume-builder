@@ -3,11 +3,13 @@ import { THEMES } from '../data/themes';
 import { goTo } from '../lib/carousel';
 import { useResume } from '../store/resume';
 import { useUi, type PanelTab } from '../store/ui';
-import { OverBadge, SampleClearButtons, ThemeDots, useActive } from './controls';
+import { OverBadge, SampleClearButtons, useActive } from './controls';
+import { Swatches } from './Inspector';
+import starUrl from '../assets/ui/star.svg';
 
 const TABS: [PanelTab, string][] = [['layouts', 'Layouts'], ['themes', 'Themes']];
 
-/** Tablet floating bottom panel with Layouts / Themes tabs. */
+/** Tablet floating bottom panel with Layouts / Themes tabs (Figma 532:3422). */
 export function TabletPanel() {
   const tpanel = useUi((s) => s.tpanel);
   const setPanel = useUi((s) => s.setPanel);
@@ -15,33 +17,35 @@ export function TabletPanel() {
   const { layout, theme, rec } = useActive();
 
   return (
-    <div className="noprint" style={{ flex: 'none', padding: '0 14px 14px' }}>
-      <div style={{ background: '#fff', border: '1px solid #d6d9de', borderRadius: 16, boxShadow: '0 8px 28px rgba(15,23,42,.12)', padding: 10, display: 'flex', flexDirection: 'column', gap: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div className="seg big" role="group" aria-label="Panel">
+    <div className="noprint flex-none px-[14px] pb-[14px]">
+      <div className="dock flex flex-col gap-[10px]">
+        <div className="flex items-center justify-between gap-2">
+          <div className="seg frost wide" role="group" aria-label="Panel">
             {TABS.map(([k, label]) => (
-              <button key={k} type="button" aria-pressed={tpanel === k} onClick={() => setPanel(k)}>{label}</button>
+              <button key={k} type="button" className="touch44" aria-pressed={tpanel === k} onClick={() => setPanel(k)}>{label}</button>
             ))}
           </div>
-          <div style={{ flex: 1 }} />
-          <OverBadge short />
-          <SampleClearButtons tall />
+          <div className="flex items-center gap-2">
+            <OverBadge short />
+            <SampleClearButtons />
+          </div>
         </div>
         <div className="hs">
           {tpanel === 'layouts'
             ? LAYOUTS.map((l, i) => (
-                <button key={l.id} type="button" className="pill" aria-pressed={i === layout} onClick={() => goTo(i)}>
-                  <span style={{ fontSize: 13, fontWeight: 600 }}>{l.name}</span>
-                  <span style={{ fontSize: 11, color: '#4b5563' }}>{l.id} · {l.cat}</span>
+                <button key={l.id} type="button" className="opt layout-opt flex-none" style={{ width: 240 }} aria-pressed={i === layout} onClick={() => goTo(i)}>
+                  <span className="code">{l.id}</span>
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate text-[12px] font-semibold text-[#111827]">{l.name}</span>
+                    <span className="truncate text-[11px] text-[#576984]">{l.grid}</span>
+                  </span>
                 </button>
               ))
             : THEMES.map((t) => (
-                <button key={t.id} type="button" className="sw" style={{ flex: 'none', minHeight: 52, padding: '8px 12px' }} aria-pressed={t.id === theme.id} onClick={() => setTheme(t.id)}>
-                  <ThemeDots t={t} />
-                  <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                    <span>{t.name}</span>
-                    <span style={{ fontSize: 10.5, color: '#4b5563' }}>{t.cat}{rec(t) ? ' · ★' : ''}</span>
-                  </span>
+                <button key={t.id} type="button" className="opt theme-opt flex-none" style={{ width: 200, height: 50 }} aria-pressed={t.id === theme.id} onClick={() => setTheme(t.id)} title={t.name}>
+                  <Swatches t={t} />
+                  <span className="name">{t.name}</span>
+                  {rec(t) && <img src={starUrl} width={11} height={11} alt="recommended" className="flex-none" />}
                 </button>
               ))}
         </div>

@@ -22,7 +22,7 @@ export function CarouselNav({ mode }: { mode: Mode }) {
 
   return (
     <div className="noprint flex flex-none justify-center" style={{ padding: isMob ? '6px 10px' : '8px 16px 10px' }}>
-      <div className="panel relative flex max-w-full items-start gap-4 p-[3px]">
+      <div className="panel relative flex max-w-full items-start gap-4 p-2" style={{ borderRadius: 21 }}>
         {!isMob && (
           <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2">
             <OverBadge />

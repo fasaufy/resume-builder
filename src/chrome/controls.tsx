@@ -36,7 +36,7 @@ export function ZoomSeg({ desktop, big }: { desktop?: boolean; big?: boolean }) 
   const zoom = useUi((s) => s.zoom);
   const setZoom = useUi((s) => s.setZoom);
   return (
-    <div className={big ? 'seg big' : 'seg'} role="group" aria-label="Zoom">
+    <div className={big ? 'seg frost big' : 'seg frost'} role="group" aria-label="Zoom">
       {(desktop ? DESKTOP_ZOOMS : TOUCH_ZOOMS).map(([z, label]) => (
         <button key={label} type="button" aria-pressed={zoom === z} onClick={() => setZoom(z)}>{label}</button>
       ))}
@@ -50,7 +50,7 @@ export function PaperSeg({ big }: { big?: boolean }) {
   const paper = useResume((s) => s.meta.paper);
   const setPaper = useResume((s) => s.setPaper);
   return (
-    <div className={big ? 'seg paper big' : 'seg paper'} role="group" aria-label="Paper size">
+    <div className={big ? 'seg frost wide big' : 'seg frost wide'} role="group" aria-label="Paper size">
       {PAPERS.map(([p, label]) => (
         <button key={p} type="button" aria-pressed={paper === p} onClick={() => setPaper(p)}>{label}</button>
       ))}
@@ -68,10 +68,12 @@ export function SampleClearButtons({ tall }: { tall?: boolean }) {
   const loadSample = useResume((s) => s.loadSample);
   const confirmClear = useUi((s) => s.confirmClear);
   const clearAll = useUi((s) => s.clearAll);
-  const cls = ['btn', tall && 'tall', confirmClear && 'btnw'].filter(Boolean).join(' ');
+  // same white pill as Export PDF; tall = 44px for the mobile sheet, otherwise 36px with a 44px tap area
+  const base = tall ? 'btn cta tall' : 'btn cta touch44';
+  const cls = confirmClear ? `${base} btnw` : base;
   return (
     <>
-      <button type="button" className={tall ? 'btn tall' : 'btn'} onClick={loadSample}>Load sample</button>
+      <button type="button" className={base} onClick={loadSample}>Load sample</button>
       <button type="button" className={cls} onClick={clearAll}>{confirmClear ? 'Tap again to clear' : 'Clear all'}</button>
     </>
   );

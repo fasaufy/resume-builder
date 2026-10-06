@@ -11,7 +11,7 @@ export function DesktopBar() {
       <span className="stat">{saveOk ? 'Autosaved in this browser' : 'Storage off: edits last this session'}</span>
       <ZoomSeg desktop />
       <PaperSeg />
-      <button type="button" className="btn btnp" onClick={doPrint}><DownloadGlyph small />Export PDF</button>
+      <button type="button" className="btn btnp cta" onClick={doPrint}><DownloadGlyph small />Export PDF</button>
     </header>
   );
 }
@@ -24,7 +24,7 @@ export function TabletBar() {
       <div style={{ flex: 1 }} />
       <ZoomSeg big />
       <PaperSeg big />
-      <button type="button" className="btn btnp tall" onClick={doPrint}><DownloadGlyph small />Export PDF</button>
+      <button type="button" className="btn btnp cta tall" onClick={doPrint}><DownloadGlyph small />Export PDF</button>
     </header>
   );
 }

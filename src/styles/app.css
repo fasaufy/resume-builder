@@ -133,15 +133,32 @@ textarea.fi.sm{min-height:48px}
 .btnp:hover{background:#f8f8f8}
 .btnw{box-shadow:0 0 0 1px #fca5a5}
 
-/* toolbar (Figma 515:780): frosted switches, white Export pill */
+/* toolbar (Figma 515:780) */
 .bar{padding:0 16px 0 32px}
-.bar .seg{height:auto;padding:3px;gap:3px;border-radius:16px;background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.bar .seg button{width:49px;height:30px;padding:0;border-radius:13px}
-.bar .seg.paper button{width:73px}
-.bar .seg button[aria-pressed="true"]{border-radius:13px;background:#fff;box-shadow:var(--shadow-soft)}
-.bar .seg.big button{height:38px}
-.bar .btnp{height:36px;padding:0 14px;border-radius:16px;font-size:14px}
-.bar .btnp.tall{height:44px}
+
+/* frosted segmented switch (toolbar, tablet panel): 49px options, .wide = 73px */
+.seg.frost{height:auto;padding:3px;gap:3px;border-radius:16px;background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.seg.frost button{width:49px;height:30px;padding:0;border-radius:13px}
+.seg.frost.wide button{width:73px}
+.seg.frost button[aria-pressed="true"]{border-radius:13px;background:#fff;box-shadow:var(--shadow-soft)}
+.seg.frost.big button{height:38px}
+
+/* white pill CTA (Export PDF, Load sample, Clear all) */
+.btn.cta{height:36px;padding:0 14px;gap:8px;border:0;border-radius:16px;background:#fff;box-shadow:var(--shadow-soft);font-size:14px;font-weight:500;color:#111827}
+.btn.cta:hover{background:#f8f8f8}
+.btn.cta.tall{height:44px}
+.btn.cta.btnw{box-shadow:0 0 0 1px #fca5a5}
+
+/* keeps a 44px tap area on controls drawn smaller than that */
+.touch44{position:relative}
+.touch44::after{content:'';position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+
+/* tablet bottom panel + mobile tool bar (Figma 532:3705) */
+.dock{background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:20px;padding:8px}
+.dock .opt{border-radius:16px}
+.tool{display:flex;flex:1 1 0;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:64px;padding:0;border:0;border-radius:13px;background:transparent;font-size:16px;color:#111827}
+.tool:hover{background:rgba(255,255,255,.6)}
+.tool img{width:18px;height:18px}
 
 /* Styles panel */
 .panel{background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:16px}

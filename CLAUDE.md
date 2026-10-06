@@ -13,7 +13,7 @@ How to read a `.dc.html` file: the markup is a template. `{{x}}` is a value from
 - Export: `window.print()` with the print stylesheet (Phase 1). `@react-pdf/renderer` comes later (Phase 3).
 
 ## UI guideline
-App chrome follows Figma file `00Ki7M7ca1cxfHl3uz45K8` ("Daybük"): screen 512:772, Styles panel 526:2291. Carousel navigator: frosted pill 526:3409 (prev/next, layout ID + name, hint); it replaces the wireframe's category, "n / 10" and dots. The glass navigator 526:2799 was tried and reverted. Tokens and classes live in the "UI guideline" block at the end of `src/styles/app.css`; static assets are in `src/assets/ui/`.
+App chrome follows Figma file `00Ki7M7ca1cxfHl3uz45K8` ("Daybük"): screen 512:772, toolbar 515:780, Styles panel 526:2291, tablet panel + mobile tool dock 532:3705. Carousel navigator: frosted pill 526:3409 (prev/next, layout ID + name, hint); it replaces the wireframe's category, "n / 10" and dots. The glass navigator 526:2799 was tried and reverted. Tokens and classes live in the "UI guideline" block at the end of `src/styles/app.css`; static assets are in `src/assets/ui/`.
 
 ## Suggested structure
 ```
