@@ -7,7 +7,10 @@ import { OverBadge } from '../chrome/controls';
 import navPrevUrl from '../assets/ui/nav-prev.svg';
 import navNextUrl from '../assets/ui/nav-next.svg';
 
-/** Below the stage: a frosted pill with prev/next, layout id + name and a hint (Figma 526:3409). */
+/**
+ * Frosted pill with prev/next, layout id + name and a hint (Figma 526:3409).
+ * At Fit it sits below the stage; when zoomed it floats over the page above a fade (Figma 535:3706).
+ */
 export function CarouselNav({ mode }: { mode: Mode }) {
   const layout = useResume((s) => s.meta.layout);
   const focus = useUi((s) => s.zoom !== 'fit');
@@ -20,9 +23,8 @@ export function CarouselNav({ mode }: { mode: Mode }) {
         : 'Scroll or swipe to browse layouts · click any text to edit'
       : 'Swipe to browse layouts · tap any text to edit';
 
-  return (
-    <div className="noprint flex flex-none justify-center" style={{ padding: isMob ? '6px 10px' : '8px 16px 10px' }}>
-      <div className="panel relative flex max-w-full items-start gap-4 p-2" style={{ borderRadius: 21 }}>
+  const pill = (
+      <div className={`panel relative flex max-w-full items-start gap-4 p-2 ${focus ? 'pill-float pointer-events-auto' : ''}`} style={{ borderRadius: 21 }}>
         {!isMob && (
           <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2">
             <OverBadge />
@@ -42,6 +44,21 @@ export function CarouselNav({ mode }: { mode: Mode }) {
           <img src={navNextUrl} width={44} height={44} alt="" />
         </button>
       </div>
+  );
+
+  if (focus) {
+    return (
+      <>
+        <div className="zoom-fade noprint" aria-hidden="true" />
+        <div className="noprint pointer-events-none absolute inset-x-0 flex justify-center" style={{ bottom: isMob ? 12 : 40, padding: '0 10px' }}>
+          {pill}
+        </div>
+      </>
+    );
+  }
+  return (
+    <div className="noprint flex flex-none justify-center" style={{ padding: isMob ? '6px 10px' : '8px 16px 10px' }}>
+      {pill}
     </div>
   );
 }

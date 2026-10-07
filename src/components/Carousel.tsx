@@ -153,7 +153,7 @@ export function Carousel({ mode, appW }: CarouselProps) {
   }, [checkOverflow]);
 
   const trackStyle: CSSProperties = focus
-    ? { minHeight: '100%', overflow: 'visible', scrollSnapType: 'none', width: 'max-content', minWidth: '100%', justifyContent: 'center', alignItems: 'flex-start', padding: '24px 16px' }
+    ? { minHeight: '100%', overflow: 'visible', scrollSnapType: 'none', width: 'max-content', minWidth: '100%', justifyContent: 'center', alignItems: 'flex-start', padding: '24px 16px 160px' } // bottom room so the page can scroll clear of the floating navigator
     : { minHeight: '100%', height: '100%', alignItems: 'center', gap };
   const spacerStyle: CSSProperties = focus ? { display: 'none' } : { flex: 'none', width: spacer, height: 1 };
 

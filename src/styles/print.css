@@ -1,20 +1,30 @@
-/* Ported from the wireframe's @media print block.
-   The @page size rule is injected at runtime from meta.paper (components/PrintPageSize.tsx). */
+/* Print: exactly one sheet holding the active page at 100%.
+   The @page size rule is injected at runtime from meta.paper (components/PrintPageSize.tsx).
+
+   Everything that is not the active page is removed with display:none, not visibility:hidden.
+   Hidden-but-present elements still take up layout space: the carousel track is ~10 pages wide,
+   and Chrome shrinks the whole document to fit it on the sheet, so the page came out ~60% size. */
 @media print {
   @page { margin: 0; }
-  html, body, #root { height: auto !important; overflow: visible !important; background: #fff !important; }
-  .app { height: auto !important; overflow: visible !important; background: #fff !important; }
-  body * { visibility: hidden !important; }
-  .slide.is-active .page,
-  .slide.is-active .page * { visibility: visible !important; }
-  .slide.is-active .page {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    transform: none !important;
-    box-shadow: none !important;
+  html, body, #root { height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
+
+  /* unwrap the app shell: every ancestor of the page becomes a plain block */
+  .app, .app > div:not(.noprint), .app > div > div:not(.noprint), .stage, .track, .slide.is-active {
+    display: block !important; position: static !important;
+    width: auto !important; height: auto !important; min-width: 0 !important; min-height: 0 !important;
+    padding: 0 !important; margin: 0 !important; gap: 0 !important;
+    overflow: visible !important; background: none !important; opacity: 1 !important; transform: none !important;
   }
-  .noprint, .rowctl, .add, .is-empty { display: none !important; }
+  .app .noprint, .noprint, .slide:not(.is-active), .track > [aria-hidden="true"], .hit { display: none !important; }
+
+  /* the page itself: full paper size, no screen scale or shadow, never more than one sheet */
+  .slide.is-active .page {
+    position: relative !important; left: auto !important; top: auto !important;
+    transform: none !important; box-shadow: none !important;
+    break-after: avoid; page-break-after: avoid;
+  }
+
+  .rowctl, .add, .is-empty { display: none !important; }
   .ed::placeholder { color: transparent !important; }
   .ed { box-shadow: none !important; background: transparent !important; }
   .item { break-inside: avoid; page-break-inside: avoid; }

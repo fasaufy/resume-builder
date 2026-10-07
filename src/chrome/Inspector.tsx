@@ -9,12 +9,12 @@ import starCaptionUrl from '../assets/ui/star-caption.svg';
 
 /** Desktop floating "Styles" panel (Figma 526:2291): themes, layouts, resume data. */
 export function Inspector() {
-  const { layout, cur, theme } = useActive();
+  const { layout, cur } = useActive();
   return (
     <aside className="panel noprint flex flex-none flex-col overflow-hidden" aria-label="Styles" style={{ width: 316, margin: '24px 14px 37px 0' }}>
       <div className="flex h-12 flex-none items-center justify-between pr-[15px] pl-[17px]" style={{ borderBottom: '1px solid rgba(223,223,223,.6)' }}>
         <span className="panel-lbl">Styles</span>
-        <span className="note" style={{ background: '#dfdfdf', fontWeight: 400 }}>{cur.id} · {theme.name}</span>
+        <span className="note" style={{ background: '#dfdfdf', fontWeight: 400 }}>{cur.id} · {cur.name}</span>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-auto px-[15px] pt-[17px] pb-[18px]">

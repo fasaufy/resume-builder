@@ -31,7 +31,7 @@ export default function App() {
       {mode === 'mobile' && <MobileTopBar />}
 
       <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+        <div style={{ position: 'relative', flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
           <Carousel mode={mode} appW={appW} />
           <CarouselNav mode={mode} />
         </div>
@@ -41,6 +41,7 @@ export default function App() {
       {mode === 'tablet' && <TabletPanel />}
       {mode === 'mobile' && <MobileBar />}
       {mode === 'mobile' && <BottomSheet />}
+      {mode === 'desktop' && <p className="credit noprint">2026 Built by Fadhil Y 🤙</p>}
     </div>
   );
 }
