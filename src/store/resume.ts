@@ -56,6 +56,8 @@ export interface ProjectItem {
   name: string;
   link: string;
   desc: string;
+  /** Thumbnail as a JPEG data URL (16:9, downscaled before saving), or '' for none. */
+  image: string;
 }
 
 export interface Resume {
@@ -82,7 +84,7 @@ export function newItem<K extends ListKey>(list: K): ListItem<K>;
 export function newItem(list: ListKey): ListItem<ListKey> {
   if (list === 'exp') return { id: uid(), role: '', company: '', location: '', start: '', end: '', bullets: ['', '', ''] };
   if (list === 'edu') return { id: uid(), degree: '', school: '', year: '', detail: '' };
-  if (list === 'projects') return { id: uid(), name: '', link: '', desc: '' };
+  if (list === 'projects') return { id: uid(), name: '', link: '', desc: '', image: '' };
   return { id: uid(), v: '' };
 }
 
@@ -107,7 +109,7 @@ export function sample(): Omit<Resume, 'meta' | 'titles'> {
     ],
     edu: [{ id: uid(), degree: '[Degree]', school: '[University]', year: '[YYYY – YYYY]', detail: '' }],
     skills: ['Design systems', 'Figma', 'React', 'TypeScript', 'Prototyping', 'Accessibility'].map((v) => ({ id: uid(), v })),
-    projects: [{ id: uid(), name: '[Project name]', link: 'alexmercer.design', desc: '[What it is, your role and the outcome]' }],
+    projects: [{ id: uid(), name: '[Project name]', link: 'alexmercer.design', desc: '[What it is, your role and the outcome]', image: '' }],
   };
 }
 
@@ -140,6 +142,10 @@ export function normalize(r: unknown): Resume {
       const id = isObj(it) ? str(it.id) : '';
       out.id = id && !seen.has(id) ? id : base.id;
       seen.add(out.id);
+      if (k === 'projects') {
+        const p = out as ProjectItem;
+        if (!/^data:image\/(jpeg|png|webp|gif);base64,/.test(p.image)) p.image = '';
+      }
       if (k === 'exp') {
         const bl = isObj(it) && Array.isArray(it.bullets) ? it.bullets.map((x) => str(x)) : [];
         (out as ExpItem).bullets = bl.length ? bl : [''];

@@ -1,4 +1,60 @@
+import { useRef, useState } from 'react';
+import { fileToThumb } from '../lib/image';
+import { useResume, type ProjectItem } from '../store/resume';
 import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
+
+/** 16:9 project photo: click or drop an image to upload; hover to replace or remove. Empty ones don't print. */
+function ProjectThumb({ x }: { x: ProjectItem }) {
+  const set = useResume((s) => s.setItemField);
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const load = async (file?: File) => {
+    if (!file || !file.type.startsWith('image/')) return;
+    setBusy(true);
+    setFailed(false);
+    try {
+      set('projects', x.id, 'image', await fileToThumb(file));
+    } catch {
+      setFailed(true); // e.g. a format the browser can't decode
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const has = !!x.image;
+  const label = busy ? 'Loading…' : failed ? 'Couldn’t read that image, try another' : has ? 'Replace photo' : '+ Upload photo';
+  return (
+    <div
+      className={`thumb aspect-video ${has ? 'has-img' : 'is-empty'}`}
+      style={{ background: TINT }}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        load(e.dataTransfer.files[0]);
+      }}
+    >
+      {has && <img src={x.image} alt={x.name ? `${x.name} thumbnail` : 'Project thumbnail'} />}
+      <button type="button" className="thumb-btn geist noprint" onClick={() => input.current?.click()} aria-label={has ? 'Replace project photo' : 'Upload project photo'}>
+        {label}
+      </button>
+      {has && (
+        <button type="button" className="thumb-remove noprint" onClick={() => set('projects', x.id, 'image', '')} aria-label="Remove project photo">×</button>
+      )}
+      <input
+        ref={input}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => {
+          load(e.target.files?.[0]);
+          e.target.value = '';
+        }}
+      />
+    </div>
+  );
+}
 
 /** L09 · Project cards first, link chips, experience after. */
 export function L09PortfolioLink() {
@@ -29,7 +85,7 @@ export function L09PortfolioLink() {
           <Items list="projects" moves="horizontal" itemClassName="flex flex-col gap-[6px] rounded-[10px] border border-[#e2e8f0] px-[14px] py-3" itemStyle={{ background: '#fff' }} ctlStyle={{ top: -11, right: 8 }}>
             {(x) => (
               <>
-                <div className="geist grid h-[72px] place-items-center rounded-md text-[10px] text-[#475569]" style={{ background: TINT }}>[ project thumbnail ]</div>
+                <ProjectThumb x={x} />
                 <PF x={x} k="name" style={{ fontSize: 14, fontWeight: 700 }} ph="Project name" label="Project name" />
                 <span className="chipw geist self-start" style={{ background: TINT, color: '#0f172a', fontSize: 10 }}>
                   <span aria-hidden="true">↗</span>

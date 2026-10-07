@@ -32,7 +32,7 @@ textarea.ed{resize:none;overflow:hidden;field-sizing:content;min-height:1.45em}
 .st02{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
 .st03{font-family:'Hedvig Letters Serif',Georgia,serif;font-size:14px;font-weight:400;font-style:normal;font-synthesis:none}
 .st04{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
-.st06{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;font-size:30px;font-weight:500;line-height:1.05;letter-spacing:0;text-transform:uppercase}
+.st06{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;font-size:14px;font-weight:500;line-height:1.05;letter-spacing:0;text-transform:uppercase}
 .st07{font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .st08{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .st10{font-family:'Hanken Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.01em}
@@ -208,3 +208,13 @@ textarea.fi.sm{min-height:48px}
 
 /* true 0.5px rule: browsers round sub-pixel borders up to 1px, a background line keeps the half pixel (L08) */
 .hairline-top{background:linear-gradient(#0f172a,#0f172a) top left/100% .5px no-repeat}
+
+/* L09 project photo (16:9, uploadable) */
+.thumb{position:relative;overflow:hidden;border-radius:6px}
+.thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.thumb-btn{position:absolute;inset:0;display:grid;place-items:center;padding:0;border:0;background:transparent;font-size:10px;color:#475569;cursor:pointer}
+.thumb-btn:hover{color:#1d4ed8}
+.thumb.has-img .thumb-btn{opacity:0;background:rgba(15,23,42,.38);color:#fff;font-size:11px;transition:opacity .12s}
+.thumb.has-img:hover .thumb-btn,.thumb.has-img:focus-within .thumb-btn{opacity:1}
+.thumb-remove{position:absolute;top:6px;right:6px;width:22px;height:22px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:#fff;color:#334155;font-size:13px;line-height:1;opacity:0;box-shadow:var(--shadow-soft);transition:opacity .12s}
+.thumb.has-img:hover .thumb-remove,.thumb.has-img:focus-within .thumb-remove{opacity:1}
