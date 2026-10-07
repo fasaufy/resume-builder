@@ -1,7 +1,7 @@
 <svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Export PDF" filter="url(#filter0_dddd_0_6)">
 <rect x="4" y="4" width="36" height="36" rx="13" fill="white"/>
-<path id="Previous" d="M25 17L19 22L25 27" stroke="#7C8593" stroke-width="1.5"/>
+<path id="Previous" d="M25 17L19 22L25 27" stroke="#101828" stroke-width="1.5"/>
 </g>
 <defs>
 <filter id="filter0_dddd_0_6" x="0" y="0" width="44" height="44" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
