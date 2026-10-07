@@ -158,7 +158,7 @@ textarea.fi.sm{min-height:48px}
 .dock .opt{border-radius:16px}
 .tool{display:flex;flex:1 1 0;min-width:0;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:64px;padding:0;border:0;border-radius:13px;background:transparent;font-size:16px;color:#111827}
 .tool:hover{background:rgba(255,255,255,.6)}
-.tool img{width:18px;height:18px}
+.tool img{width:20px;height:20px}
 
 /* Styles panel */
 .panel{background:rgba(255,255,255,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:16px}
