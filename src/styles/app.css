@@ -32,7 +32,7 @@ textarea.ed{resize:none;overflow:hidden;field-sizing:content;min-height:1.45em}
 .st02{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
 .st03{font-family:'Hedvig Letters Serif',Georgia,serif;font-size:14px;font-weight:400;font-style:normal;font-synthesis:none}
 .st04{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
-.st06{font-family:'Hanken Grotesk',sans-serif;font-size:30px;font-weight:700;line-height:1.05;letter-spacing:-.02em}
+.st06{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;font-size:30px;font-weight:500;line-height:1.05;letter-spacing:0;text-transform:uppercase}
 .st07{font-family:'Hanken Grotesk',sans-serif;font-size:16px;font-weight:700;letter-spacing:-.01em}
 .st08{font-family:'Inclusive Sans',ui-sans-serif,sans-serif;text-transform:uppercase;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 .st10{font-family:'Hanken Grotesk',sans-serif;font-size:15px;font-weight:700;letter-spacing:-.01em}
@@ -205,3 +205,6 @@ textarea.fi.sm{min-height:48px}
   -webkit-mask-image:linear-gradient(to bottom,transparent,#000 40%);mask-image:linear-gradient(to bottom,transparent,#000 40%)}
 .pill-float{box-shadow:1.25px 0 0 -.75px rgba(219,219,219,.4),-1.25px 0 0 -.75px rgba(219,219,219,.4),0 0 0 .5px rgba(219,219,219,.6),0 8px 48px rgba(0,0,0,.04)}
 .credit{position:absolute;left:32px;bottom:37px;z-index:5;margin:0;font-size:11.5px;line-height:1.2;color:#000;white-space:nowrap;pointer-events:none}
+
+/* true 0.5px rule: browsers round sub-pixel borders up to 1px, a background line keeps the half pixel (L08) */
+.hairline-top{background:linear-gradient(#0f172a,#0f172a) top left/100% .5px no-repeat}

@@ -1,9 +1,9 @@
 import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
 
-/** Section with the 3px ink top rule. */
-const RULED = 'flex flex-col gap-2 border-t-[3px] border-ink pt-[10px]';
+/** Section with the 0.5px ink top rule. */
+const RULED = 'hairline-top flex flex-col gap-2 pt-[10px]';
 
-/** L08 · Huge name, 8px color bar, hero statement, roles in two columns. */
+/** L08 · Huge name, 1px color rule, hero statement, roles in two columns. */
 export function L08TypographicBold() {
   return (
     <div className="flex h-full flex-col gap-[18px] px-14 py-[52px] font-sans text-[12px] leading-[1.5] text-ink">
@@ -19,7 +19,7 @@ export function L08TypographicBold() {
           </span>
         </div>
       </header>
-      <div className="h-2" style={{ background: P }} />
+      <div className="h-px" style={{ background: P }} />
       <Basic k="summary" multiline rows={2} style={{ fontFamily: HANKEN, fontSize: 24, fontWeight: 500, lineHeight: 1.22, letterSpacing: '-.015em' }} ph="Write a one-line manifesto: what you make, for whom, and why it matters." label="Hero statement" />
 
       <section className={`${RULED} !gap-[10px]`}>
