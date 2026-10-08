@@ -1,4 +1,4 @@
-import { Add, Basic, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, Items, P, PF, Sep, Skills, TINT, Title, XF } from './parts';
 
 const Square = () => <span className="size-2 flex-none" style={{ background: P }} />;
 
@@ -32,7 +32,7 @@ export function L02TechnicalModern() {
                   <XF x={x} k="role" style={{ fontWeight: 600, fontSize: 13 }} ph="e.g. Staff Software Engineer" label="Job title" />
                   <div className="geist flex flex-none items-baseline text-[10.5px] text-[#475569]">
                     <XF x={x} k="start" inline style={{ textAlign: 'right' }} ph="YYYY-MM" label="Start date" />
-                    <span>→</span>
+                    <Sep vals={[x.start, x.end]} i={0}>→</Sep>
                     <XF x={x} k="end" inline ph="Present" label="End date" />
                   </div>
                 </div>

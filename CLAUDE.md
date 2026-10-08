@@ -123,6 +123,8 @@ Copy the `@media print` block from Main.dc.html:
 - Add `break-inside: avoid` on items.
 - ATS: Export sets `exporting` in the UI store (also on `beforeprint`, reset on `afterprint`); while it's true every field renders as plain text (`h1` name, `h2` section titles, `p`/`span` text, `ul > li` bullets) and empty fields render nothing. Print caps title/badge letter-spacing at 0.02em, keeps `.item` static and hides L10's `.num-badge` numbers. L01, L03 and L05 are flagged `ats: true` in data/layouts.ts.
 - ATS rules for layout code: (1) source order = reading order (name, contact, summary, sections), use grid placement rather than `order` to move things visually; (2) don't put text inside `position: relative/absolute` boxes (Chrome paints positioned boxes, and writes their text to the PDF, after everything else); (3) a section label beside its content must not share a line with it in print (`.side-row` pushes content down 14px).
+- Separators between fields (· – → / @ |) go through `Sep` (layouts/parts.tsx): while exporting it prints only when the field before it has text and a later field does too. Empty pills (`.chipw`) don't print.
+- Export (`doPrint`) first checks for bracketed sample values like "[Previous role]" (lib/sampleText.ts) and asks via `ExportConfirm` (Export / Go back).
 - "Export ATS version" (`exporting === 'ats'`) prints `layouts/AtsVersion.tsx`, a single-column version of the same content that may run to several sheets; offered for every layout with `ats: false`. Verified with two parser models: stream order (pypdf) and top-to-bottom blocks (pdfminer.six).
 
 ## Stretch test (acceptance checklist)

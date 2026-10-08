@@ -116,6 +116,17 @@ export function Skills({ ph, chipClass, chipStyle, label = 'Skill' }: { ph: stri
   );
 }
 
+/**
+ * Separator between fields (· – → / @ |). On screen it always shows (empty fields show placeholders).
+ * While exporting it is left out next to empty text: it prints only when the field before it has text
+ * and some field after it does too, so the PDF never has "· ·" or a dangling "–".
+ */
+export function Sep({ vals, i, children, className, style }: { vals: string[]; i: number; children: ReactNode; className?: string; style?: CSSProperties }) {
+  const exporting = useUi((s) => s.exporting);
+  if (exporting && !(vals[i]?.trim() && vals.slice(i + 1).some((v) => v.trim()))) return null;
+  return <span aria-hidden="true" className={className} style={style}>{children}</span>;
+}
+
 /** Dashed "+ Add …" button under a list. */
 export function Add({ list, children, style }: { list: Exclude<ListKey, 'skills'>; children: ReactNode; style?: CSSProperties }) {
   const add = useResume((s) => s.addItem);

@@ -1,4 +1,4 @@
-import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, HANKEN, Items, P, PF, Sep, Skills, TINT, Title, XF } from './parts';
 
 /** L07 · Tinted 33% sidebar with a color mark, generous main column. */
 export function L07StudioSplit() {
@@ -52,7 +52,7 @@ export function L07StudioSplit() {
                   <XF x={x} k="role" style={{ fontWeight: 700, fontSize: 13.5 }} ph="e.g. Creative Producer" label="Job title" />
                   <div className="flex flex-none items-baseline text-[11px] text-[#475569]">
                     <XF x={x} k="start" inline style={{ textAlign: 'right' }} ph="YYYY" label="Start date" />
-                    <span>–</span>
+                    <Sep vals={[x.start, x.end]} i={0}>–</Sep>
                     <XF x={x} k="end" inline ph="Now" label="End date" />
                   </div>
                 </div>

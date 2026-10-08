@@ -1,4 +1,4 @@
-import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, HANKEN, Items, P, PF, Sep, Skills, Title, XF } from './parts';
 
 /** 30 / 70 row with a hard top rule; the oversized title sits in the 30% column. */
 const ROW = 'side-row grid grid-cols-[30%_minmax(0,1fr)] items-start gap-6 border-t border-ink pt-[14px]';
@@ -31,9 +31,9 @@ export function L06SwissEditorial() {
               <>
                 <div className="flex items-baseline text-[10px] uppercase tracking-[.08em] text-[#475569]">
                   <XF x={x} k="start" inline ph="YYYY" label="Start date" />
-                  <span>/</span>
+                  <Sep vals={[x.start, x.end, x.location]} i={0}>/</Sep>
                   <XF x={x} k="end" inline ph="Now" label="End date" />
-                  <span className="mx-1">·</span>
+                  <Sep vals={[x.start, x.end, x.location]} i={1} className="mx-1">·</Sep>
                   <XF x={x} k="location" inline ph="City" label="Location" />
                 </div>
                 <XF x={x} k="role" style={{ fontFamily: HANKEN, fontSize: 16, fontWeight: 700, lineHeight: 1.25 }} ph="e.g. Lead Product Designer" label="Job title" />

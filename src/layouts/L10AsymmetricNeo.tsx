@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, HANKEN, Items, P, PF, Sep, Skills, TINT, Title, XF } from './parts';
 
 /** Mono "NN —" badge before a card heading. */
 function CardHead({ n, children }: { n: string; children: ReactNode }) {
@@ -44,7 +44,7 @@ export function L10AsymmetricNeo() {
               <div className="flex flex-wrap items-center gap-[6px]">
                 <span className="chipw geist" style={{ background: TINT, fontSize: 9.5, borderRadius: 0 }}>
                   <XF x={x} k="start" inline ph="YYYY" label="Start date" />
-                  <span>→</span>
+                  <Sep vals={[x.start, x.end]} i={0}>→</Sep>
                   <XF x={x} k="end" inline ph="Now" label="End date" />
                 </span>
                 <span className="chipw geist" style={{ border: '1px solid #cbd5e1', fontSize: 9.5, borderRadius: 0 }}>

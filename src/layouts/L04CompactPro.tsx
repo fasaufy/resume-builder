@@ -1,4 +1,4 @@
-import { Add, Basic, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, Items, P, PF, Sep, Skills, TINT, Title, XF } from './parts';
 
 /** L04 · Dense 50 / 50 columns under a heavy-ruled header. */
 export function L04CompactPro() {
@@ -28,7 +28,7 @@ export function L04CompactPro() {
                 <div className="flex items-baseline gap-[6px] text-[10.5px] text-[#334155]">
                   <XF x={x} k="company" style={{ fontWeight: 500 }} ph="Company or site" label="Company" />
                   <XF x={x} k="start" inline style={{ flex: 'none', textAlign: 'right' }} ph="MM/YY" label="Start date" />
-                  <span>–</span>
+                  <Sep vals={[x.start, x.end]} i={0}>–</Sep>
                   <XF x={x} k="end" inline style={{ flex: 'none' }} ph="Present" label="End date" />
                 </div>
                 <Bullets x={x} marker="•" className="mt-[2px]" ph="Cut cost, lead time or defects by a measurable amount" />

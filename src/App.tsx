@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { BottomSheet } from './chrome/BottomSheet';
+import { ExportConfirm } from './chrome/ExportConfirm';
 import { DesktopBar, TabletBar } from './chrome/DesktopBar';
 import { Inspector } from './chrome/Inspector';
 import { MobileBar, MobileTopBar } from './chrome/MobileBar';
@@ -26,7 +27,7 @@ export default function App() {
   return (
     <div ref={setRootEl} className="app" style={{ position: 'relative', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       <PrintPageSize />
-      {mode === 'desktop' && <DesktopBar />}
+      {mode === 'desktop' && <DesktopBar showTip={appW >= 1360} />}
       {mode === 'tablet' && <TabletBar />}
       {mode === 'mobile' && <MobileTopBar />}
 
@@ -41,6 +42,7 @@ export default function App() {
       {mode === 'tablet' && <TabletPanel />}
       {mode === 'mobile' && <MobileBar />}
       {mode === 'mobile' && <BottomSheet />}
+      <ExportConfirm />
       {mode === 'desktop' && <p className="credit noprint">2026 Built by Fadhil Y 🤙</p>}
     </div>
   );

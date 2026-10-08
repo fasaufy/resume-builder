@@ -1,8 +1,10 @@
+import { useResume } from '../store/resume';
 import type { CSSProperties } from 'react';
-import { Add, Basic, Bullets, EF, Items, P, PF, SERIF, Skills, TINT, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, Items, P, PF, Sep, SERIF, Skills, TINT, Title, XF } from './parts';
 
 /** L01 · Single column, centered serif header, ruled section titles. */
 export function L01ExecutiveClassic() {
+  const b = useResume((s) => s.basics);
   const rule: CSSProperties = { borderBottom: `1px solid ${P}`, paddingBottom: 3 };
   return (
     <div className="flex h-full flex-col gap-[18px] px-[68px] py-[60px] font-sans text-[12.5px] leading-[1.5] text-ink">
@@ -10,9 +12,9 @@ export function L01ExecutiveClassic() {
         <Basic k="fullName" style={{ ...SERIF, fontSize: 32, lineHeight: 1.2, textAlign: 'center', color: P }} ph="Your Full Name" label="Full name" />
         <Basic k="headline" style={{ fontSize: 12, fontWeight: 500, letterSpacing: '.14em', textTransform: 'uppercase', textAlign: 'center', color: '#334155' }} ph="Title, e.g. Chief Operating Officer" label="Headline" />
         <div className="mt-1 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-[2px] text-[11.5px] text-[#334155]">
-          <Basic k="email" inline ph="you@email.com" label="Email" /><span aria-hidden="true">·</span>
-          <Basic k="phone" inline ph="+1 (555) 000-0000" label="Phone" /><span aria-hidden="true">·</span>
-          <Basic k="location" inline ph="City, Country" label="Location" /><span aria-hidden="true">·</span>
+          <Basic k="email" inline ph="you@email.com" label="Email" /><Sep vals={[b.email, b.phone, b.location, b.website]} i={0}>·</Sep>
+          <Basic k="phone" inline ph="+1 (555) 000-0000" label="Phone" /><Sep vals={[b.email, b.phone, b.location, b.website]} i={1}>·</Sep>
+          <Basic k="location" inline ph="City, Country" label="Location" /><Sep vals={[b.email, b.phone, b.location, b.website]} i={2}>·</Sep>
           <Basic k="website" inline ph="linkedin.com/in/yourname" label="Website" />
         </div>
       </header>
@@ -31,7 +33,7 @@ export function L01ExecutiveClassic() {
                 <XF x={x} k="role" style={{ fontWeight: 700, fontSize: 13 }} ph="Title, e.g. Managing Director, Investment Banking" label="Job title" />
                 <div className="flex flex-none items-baseline text-[11.5px] text-[#334155]">
                   <XF x={x} k="start" inline style={{ textAlign: 'right' }} ph="MMM YYYY" label="Start date" />
-                  <span>–</span>
+                  <Sep vals={[x.start, x.end]} i={0}>–</Sep>
                   <XF x={x} k="end" inline ph="Present" label="End date" />
                 </div>
               </div>

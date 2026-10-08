@@ -19,6 +19,8 @@ interface UiState {
    * 'design' prints the chosen layout; 'ats' prints the single-column ATS version of the same content.
    */
   exporting: false | 'design' | 'ats';
+  /** Export waiting on the "sample text in [brackets]" confirmation, or null. */
+  confirmExport: null | 'design' | 'ats';
   setZoom: (z: Zoom) => void;
   setSheet: (s: Sheet) => void;
   setTab: (t: EditTab) => void;
@@ -38,6 +40,7 @@ export const useUi = create<UiState>()((set, get) => ({
   over: false,
   confirmClear: false,
   exporting: false,
+  confirmExport: null,
   setZoom: (zoom) => set({ zoom }),
   setSheet: (sheet) => set({ sheet }),
   setTab: (tab) => set({ tab }),

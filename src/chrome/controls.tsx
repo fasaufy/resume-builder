@@ -2,8 +2,9 @@ import type { CSSProperties } from 'react';
 import { flushSync } from 'react-dom';
 import { LAYOUTS } from '../data/layouts';
 import { getTheme, type ThemeDef } from '../data/themes';
-import { useResume, type Paper } from '../store/resume';
+import { getResume, useResume, type Paper } from '../store/resume';
 import { useUi, type Zoom } from '../store/ui';
+import { findBracketed } from '../lib/sampleText';
 import logoUrl from '../assets/ui/logo.svg';
 import downloadUrl from '../assets/ui/download.svg';
 import downloadSmUrl from '../assets/ui/download-sm.svg';
@@ -13,7 +14,12 @@ import downloadSmUrl from '../assets/ui/download-sm.svg';
  * then open the print dialog. `afterprint` (see lib/printMode.ts) switches back.
  * kind 'ats' prints the single-column ATS version of the resume instead of the chosen design.
  */
-export const doPrint = (kind: 'design' | 'ats' = 'design') => {
+export const doPrint = (kind: 'design' | 'ats' = 'design', confirmed = false) => {
+  // sample values like "[Previous role]" left in the resume: ask first (ExportConfirm dialog)
+  if (!confirmed && findBracketed(getResume()).length) {
+    useUi.setState({ confirmExport: kind });
+    return;
+  }
   flushSync(() => useUi.setState({ exporting: kind }));
   requestAnimationFrame(() => {
     try {
@@ -117,6 +123,13 @@ export function AtsExportButton({ className, tall }: { className?: string; tall?
       <DownloadGlyph small />Export ATS version
     </button>
   );
+}
+
+/** Nudge toward the ATS version on visual layouts (shown next to the export buttons). */
+export function AtsTip({ className, size }: { className?: string; size?: number }) {
+  const { cur } = useActive();
+  if (cur.ats) return null;
+  return <p className={['ats-tip', className].filter(Boolean).join(' ')} style={size ? { fontSize: size } : undefined}>Applying through an online portal? Use the ATS version.</p>;
 }
 
 /** Active layout + theme, and whether a theme is recommended (★) for the active layout. */

@@ -1,6 +1,7 @@
+import { useResume } from '../store/resume';
 import type { ReactNode } from 'react';
 import type { Titles } from '../store/resume';
-import { Add, Basic, Bullets, EF, Items, P, PF, SERIF, Skills, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, Items, P, PF, Sep, SERIF, Skills, Title, XF } from './parts';
 
 /** 118px italic serif label column + content, hairline between rows. */
 function Row({ k, last, children }: { k: keyof Titles; last?: boolean; children: ReactNode }) {
@@ -14,15 +15,16 @@ function Row({ k, last, children }: { k: keyof Titles; last?: boolean; children:
 
 /** L03 · Serif header, dense rows with a 118px label column. */
 export function L03MinimalIvy() {
+  const b = useResume((s) => s.basics);
   return (
     <div className="flex h-full flex-col gap-[14px] px-16 py-14 font-sans text-[11.5px] leading-[1.42] text-ink">
       <header className="flex flex-col items-center gap-[2px] pb-3 text-center" style={{ borderBottom: `2px solid ${P}` }}>
         <Basic k="fullName" style={{ ...SERIF, fontSize: 36, lineHeight: 1.15, textAlign: 'center' }} ph="Your Full Name" label="Full name" />
         <Basic k="headline" style={{ ...SERIF, fontSize: 15, textAlign: 'center', color: P }} ph="e.g. Engagement Manager, Strategy Consulting" label="Headline" />
         <div className="mt-1 flex flex-wrap justify-center gap-x-2 gap-y-[2px] text-[11px] text-[#334155]">
-          <Basic k="email" inline ph="you@email.com" label="Email" /><span aria-hidden="true">|</span>
-          <Basic k="phone" inline ph="+1 (555) 000-0000" label="Phone" /><span aria-hidden="true">|</span>
-          <Basic k="location" inline ph="City, Country" label="Location" /><span aria-hidden="true">|</span>
+          <Basic k="email" inline ph="you@email.com" label="Email" /><Sep vals={[b.email, b.phone, b.location, b.website]} i={0}>|</Sep>
+          <Basic k="phone" inline ph="+1 (555) 000-0000" label="Phone" /><Sep vals={[b.email, b.phone, b.location, b.website]} i={1}>|</Sep>
+          <Basic k="location" inline ph="City, Country" label="Location" /><Sep vals={[b.email, b.phone, b.location, b.website]} i={2}>|</Sep>
           <Basic k="website" inline ph="linkedin.com/in/yourname" label="Website" />
         </div>
       </header>
@@ -64,7 +66,7 @@ export function L03MinimalIvy() {
                   <XF x={x} k="role" style={{ fontStyle: 'italic' }} ph="e.g. Senior Consultant" label="Job title" />
                   <div className="flex flex-none items-baseline">
                     <XF x={x} k="start" inline style={{ textAlign: 'right' }} ph="MMM YYYY" label="Start date" />
-                    <span>–</span>
+                    <Sep vals={[x.start, x.end]} i={0}>–</Sep>
                     <XF x={x} k="end" inline ph="Present" label="End date" />
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { fileToThumb } from '../lib/image';
 import { useResume, type ProjectItem } from '../store/resume';
-import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, HANKEN, Items, P, PF, Sep, Skills, TINT, Title, XF } from './parts';
 
 /** 16:9 project photo: click or drop an image to upload; hover to replace or remove. Empty ones don't print. */
 function ProjectThumb({ x }: { x: ProjectItem }) {
@@ -58,6 +58,7 @@ function ProjectThumb({ x }: { x: ProjectItem }) {
 
 /** L09 · Project cards first, link chips, experience after. */
 export function L09PortfolioLink() {
+  const b = useResume((s) => s.basics);
   return (
     <div className="flex h-full flex-col gap-5 px-[52px] py-12 font-sans text-[12px] leading-[1.5] text-ink">
       <header className="flex items-end justify-between gap-6">
@@ -72,7 +73,7 @@ export function L09PortfolioLink() {
           <Basic k="email" inline style={{ textAlign: 'right' }} ph="you@email.com" label="Email" />
           <div className="flex">
             <Basic k="phone" inline style={{ textAlign: 'right' }} ph="+1 (555) 000-0000" label="Phone" />
-            <span>·</span>
+            <Sep vals={[b.phone, b.location]} i={0}>·</Sep>
             <Basic k="location" inline ph="City" label="Location" />
           </div>
         </div>
@@ -111,11 +112,11 @@ export function L09PortfolioLink() {
             <>
               <div className="flex items-baseline gap-[6px]">
                 <XF x={x} k="role" inline style={{ flex: 'none', maxWidth: '55%', fontWeight: 700, fontSize: 13, minWidth: '12ch' }} ph="e.g. Frontend Engineer" label="Job title" />
-                <span className="text-[#475569]">@</span>
+                <Sep vals={[x.role, x.company]} i={0} className="text-[#475569]">@</Sep>
                 <XF x={x} k="company" style={{ fontWeight: 500 }} ph="Company" label="Company" />
                 <div className="geist flex flex-none text-[10px] text-[#475569]">
                   <XF x={x} k="start" inline style={{ textAlign: 'right' }} ph="YYYY" label="Start date" />
-                  <span>–</span>
+                  <Sep vals={[x.start, x.end]} i={0}>–</Sep>
                   <XF x={x} k="end" inline ph="Now" label="End date" />
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF } from './parts';
+import { Add, Basic, Bullets, EF, HANKEN, Items, P, PF, Sep, Skills, TINT, Title, XF } from './parts';
 
 /** Section with the 0.5px ink top rule. */
 const RULED = 'hairline-top flex flex-col gap-2 pt-[10px]';
@@ -32,9 +32,9 @@ export function L08TypographicBold() {
                 <XF x={x} k="company" style={{ fontWeight: 600, color: P }} ph="Agency, publication or brand" label="Company" />
                 <div className="geist flex items-baseline text-[10px] text-[#475569]">
                   <XF x={x} k="start" inline ph="YYYY" label="Start date" />
-                  <span>—</span>
+                  <Sep vals={[x.start, x.end, x.location]} i={0}>—</Sep>
                   <XF x={x} k="end" inline ph="Now" label="End date" />
-                  <span className="mx-1">/</span>
+                  <Sep vals={[x.start, x.end, x.location]} i={1} className="mx-1">/</Sep>
                   <XF x={x} k="location" inline ph="City" label="Location" />
                 </div>
                 <Bullets x={x} marker="+" className="mt-[3px]" ph="Wrote a line, campaign or story; note reach or award" />
