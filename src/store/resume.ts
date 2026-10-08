@@ -107,9 +107,12 @@ export function sample(): Omit<Resume, 'meta' | 'titles'> {
       { id: uid(), role: 'Lead Product Designer', company: 'Horizon Labs', location: 'Remote', start: 'Mar 2022', end: 'Present', bullets: ['Designed and shipped 0-to-1 design system adopted by 14 product squads.', 'Increased canvas interaction speeds by 40% through atomic state optimizations.'] },
       { id: uid(), role: '[Previous role]', company: '[Previous company]', location: '[City]', start: '[MMM YYYY]', end: '[MMM YYYY]', bullets: ['[A shipped project and its measurable impact]'] },
     ],
-    edu: [{ id: uid(), degree: '[Degree]', school: '[University]', year: '[YYYY – YYYY]', detail: '' }],
+    edu: [{ id: uid(), degree: 'BFA, Interaction Design', school: 'California College of the Arts', year: '2014 – 2018', detail: 'Graduated with honors' }],
     skills: ['Design systems', 'Figma', 'React', 'TypeScript', 'Prototyping', 'Accessibility'].map((v) => ({ id: uid(), v })),
-    projects: [{ id: uid(), name: '[Project name]', link: 'alexmercer.design', desc: '[What it is, your role and the outcome]', image: '' }],
+    projects: [
+      { id: uid(), name: 'Horizon Design System', link: 'alexmercer.design/horizon', desc: 'Token-based React component library; led design and build, now used by 14 product squads.', image: '' },
+      { id: uid(), name: 'Flowboard', link: 'github.com/alexmercer/flowboard', desc: 'Open-source sprint whiteboard built with React and WebSockets; 2.3k GitHub stars.', image: '' },
+    ],
   };
 }
 
