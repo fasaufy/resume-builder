@@ -34,6 +34,12 @@
   .st01, .st02, .st04, .st08, .bdg, .headline, .page [class*="tracking-"] { letter-spacing: 0.02em !important; }
   /* L10 numbering ("00 —", "01 —"…) is decoration; keep only the section names */
   .num-badge { display: none !important; }
+  /* L03 / L05 / L06: a section label beside its content must not share a line with it, or parsers read
+     "Profile Multi-disciplinary…" as one line and lose the heading. Content starts one line lower. */
+  .side-row > :not(:first-child) { margin-top: 14px !important; }
+
+  /* ATS version: flows onto as many sheets as needed (page margins come from @page) */
+  .slide.is-active .page.ats-print { width: auto !important; height: auto !important; overflow: visible !important; break-after: auto; page-break-after: auto; }
   .ed::placeholder { color: transparent !important; }
   .ed { box-shadow: none !important; background: transparent !important; }
   .item { break-inside: avoid; page-break-inside: avoid; }

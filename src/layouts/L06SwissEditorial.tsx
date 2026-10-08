@@ -1,24 +1,25 @@
 import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, Title, XF } from './parts';
 
 /** 30 / 70 row with a hard top rule; the oversized title sits in the 30% column. */
-const ROW = 'grid grid-cols-[30%_minmax(0,1fr)] items-start gap-6 border-t border-ink pt-[14px]';
+const ROW = 'side-row grid grid-cols-[30%_minmax(0,1fr)] items-start gap-6 border-t border-ink pt-[14px]';
 
 /** L06 · 30 / 70 Swiss grid with oversized 30px section headers. */
 export function L06SwissEditorial() {
   const big = { color: P };
   return (
     <div className="flex h-full flex-col gap-6 px-14 py-[60px] font-sans text-[12px] leading-[1.5] text-ink">
+      {/* name first in reading order; the contact column is placed on the left by the grid */}
       <header className="grid grid-cols-[30%_minmax(0,1fr)] gap-6">
-        <div className="geist flex flex-col pt-2 text-[10.5px] text-[#334155]">
+        <div className="col-start-2 row-start-1 flex min-w-0 flex-col gap-[6px]">
+          <Basic k="fullName" style={{ fontFamily: HANKEN, fontSize: 50, fontWeight: 800, lineHeight: 1, letterSpacing: '-.035em' }} ph="Your Name" label="Full name" />
+          <Basic k="headline" style={{ fontSize: 16, fontWeight: 500, color: P }} ph="e.g. Senior Product Designer" label="Headline" />
+          <Basic k="summary" multiline rows={2} style={{ fontSize: 13, color: '#1e293b', marginTop: 4 }} ph="Design point of view: the problems you love and how you partner with product and engineering." label="Summary" />
+        </div>
+        <div className="geist col-start-1 row-start-1 flex flex-col pt-2 text-[10.5px] text-[#334155]">
           <Basic k="email" ph="you@email.com" label="Email" />
           <Basic k="phone" ph="+1 (555) 000-0000" label="Phone" />
           <Basic k="location" ph="City, Country" label="Location" />
           <Basic k="website" style={{ color: P }} ph="yourportfolio.com" label="Website" />
-        </div>
-        <div className="flex min-w-0 flex-col gap-[6px]">
-          <Basic k="fullName" style={{ fontFamily: HANKEN, fontSize: 50, fontWeight: 800, lineHeight: 1, letterSpacing: '-.035em' }} ph="Your Name" label="Full name" />
-          <Basic k="headline" style={{ fontSize: 16, fontWeight: 500, color: P }} ph="e.g. Senior Product Designer" label="Headline" />
-          <Basic k="summary" multiline rows={2} style={{ fontSize: 13, color: '#1e293b', marginTop: 4 }} ph="Design point of view: the problems you love and how you partner with product and engineering." label="Summary" />
         </div>
       </header>
 
@@ -63,8 +64,12 @@ export function L06SwissEditorial() {
 
       <section className={ROW}>
         <Title k="skills" className="st06" style={big} ph="Title" />
+        <Skills chipStyle={{ border: '1px solid #0f172a' }} ph="e.g. Figma" />
+      </section>
+
+      <section className={ROW}>
+        <Title k="edu" className="st06" style={big} ph="Title" />
         <div className="flex flex-col gap-3">
-          <Skills chipStyle={{ border: '1px solid #0f172a' }} ph="e.g. Figma" />
           <Items list="edu" moves={false} itemClassName="flex items-baseline gap-[10px]">
             {(x) => (
               <>

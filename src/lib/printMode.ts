@@ -7,7 +7,7 @@ import { useUi } from '../store/ui';
  */
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeprint', () => {
-    if (!useUi.getState().exporting) flushSync(() => useUi.setState({ exporting: true }));
+    if (!useUi.getState().exporting) flushSync(() => useUi.setState({ exporting: 'design' }));
   });
   window.addEventListener('afterprint', () => useUi.setState({ exporting: false }));
 }

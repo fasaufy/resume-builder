@@ -5,7 +5,7 @@ import { Add, Basic, Bullets, EF, Items, P, PF, SERIF, Skills, Title, XF } from 
 /** 118px italic serif label column + content, hairline between rows. */
 function Row({ k, last, children }: { k: keyof Titles; last?: boolean; children: ReactNode }) {
   return (
-    <section className={`grid grid-cols-[118px_minmax(0,1fr)] items-start gap-[14px] ${last ? '' : 'border-b border-[#e2e8f0] pb-3'}`}>
+    <section className={`side-row grid grid-cols-[118px_minmax(0,1fr)] items-start gap-[14px] ${last ? '' : 'border-b border-[#e2e8f0] pb-3'}`}>
       <Title k={k} className="st03" ph="Title" />
       {children}
     </section>

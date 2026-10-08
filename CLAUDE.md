@@ -122,6 +122,8 @@ Copy the `@media print` block from Main.dc.html:
 - Set `@page { size: A4 | letter; margin: 0 }` according to `meta.paper`. Inject this rule dynamically, which the wireframe could not do.
 - Add `break-inside: avoid` on items.
 - ATS: Export sets `exporting` in the UI store (also on `beforeprint`, reset on `afterprint`); while it's true every field renders as plain text (`h1` name, `h2` section titles, `p`/`span` text, `ul > li` bullets) and empty fields render nothing. Print caps title/badge letter-spacing at 0.02em, keeps `.item` static and hides L10's `.num-badge` numbers. L01, L03 and L05 are flagged `ats: true` in data/layouts.ts.
+- ATS rules for layout code: (1) source order = reading order (name, contact, summary, sections), use grid placement rather than `order` to move things visually; (2) don't put text inside `position: relative/absolute` boxes (Chrome paints positioned boxes, and writes their text to the PDF, after everything else); (3) a section label beside its content must not share a line with it in print (`.side-row` pushes content down 14px).
+- "Export ATS version" (`exporting === 'ats'`) prints `layouts/AtsVersion.tsx`, a single-column version of the same content that may run to several sheets; offered for every layout with `ats: false`. Verified with two parser models: stream order (pypdf) and top-to-bottom blocks (pdfminer.six).
 
 ## Stretch test (acceptance checklist)
 Drag the browser width slowly from 320 up to 1920 px, then repeat in DevTools at each device size: 390×844, 466×678 @3x, 768×1024, 820×1180, 890×626 @3x, 1023×768, 1024×768, 1440×900.

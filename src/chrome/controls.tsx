@@ -9,11 +9,12 @@ import downloadUrl from '../assets/ui/download.svg';
 import downloadSmUrl from '../assets/ui/download-sm.svg';
 
 /**
- * Export PDF: switch the page to plain text first (exporting = true), let the browser paint
- * one frame, then open the print dialog. `afterprint` (see lib/printMode.ts) switches back.
+ * Export PDF: switch the page to plain text first (`exporting`), let the browser paint one frame,
+ * then open the print dialog. `afterprint` (see lib/printMode.ts) switches back.
+ * kind 'ats' prints the single-column ATS version of the resume instead of the chosen design.
  */
-export const doPrint = () => {
-  flushSync(() => useUi.setState({ exporting: true }));
+export const doPrint = (kind: 'design' | 'ats' = 'design') => {
+  flushSync(() => useUi.setState({ exporting: kind }));
   requestAnimationFrame(() => {
     try {
       window.print();
@@ -103,6 +104,18 @@ export function AtsNote({ className }: { className?: string }) {
     <span className={['ats ats-safe', className].filter(Boolean).join(' ')} title="Reads top to bottom, so applicant tracking systems parse it cleanly">ATS-safe</span>
   ) : (
     <span className={['ats ats-visual', className].filter(Boolean).join(' ')} title="Visual layout: may parse out of order in some ATS">Visual layout: may parse out of order in some ATS</span>
+  );
+}
+
+/** "Export ATS version": single-column PDF of the same content, offered for visual layouts. */
+export function AtsExportButton({ className, tall }: { className?: string; tall?: boolean }) {
+  const { cur } = useActive();
+  if (cur.ats) return null;
+  const cls = ['btn cta', tall ? 'tall' : 'touch44', className].filter(Boolean).join(' ');
+  return (
+    <button type="button" className={cls} onClick={() => doPrint('ats')} title="A single-column PDF of the same content that every ATS reads in order">
+      <DownloadGlyph small />Export ATS version
+    </button>
   );
 }
 

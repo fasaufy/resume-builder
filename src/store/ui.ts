@@ -14,8 +14,11 @@ interface UiState {
   /** Active page content runs past one page. */
   over: boolean;
   confirmClear: boolean;
-  /** True while printing: fields render as plain text (h1/h2/p/li) instead of inputs, for ATS-readable PDFs. */
-  exporting: boolean;
+  /**
+   * Set while printing. Fields render as plain text (h1/h2/p/li) instead of inputs, for ATS-readable PDFs.
+   * 'design' prints the chosen layout; 'ats' prints the single-column ATS version of the same content.
+   */
+  exporting: false | 'design' | 'ats';
   setZoom: (z: Zoom) => void;
   setSheet: (s: Sheet) => void;
   setTab: (t: EditTab) => void;

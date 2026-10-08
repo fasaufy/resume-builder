@@ -12,7 +12,7 @@ export function MobileTopBar() {
       <Mark />
       <div style={{ flex: 1 }} />
       <OverBadge short style={{ padding: '3px 8px', fontSize: 11 }} />
-      <button type="button" className="ib" onClick={doPrint} aria-label="Export PDF"><DownloadGlyph /></button>
+      <button type="button" className="ib" onClick={() => doPrint()} aria-label="Export PDF"><DownloadGlyph /></button>
     </header>
   );
 }

@@ -6,6 +6,7 @@ import type { Mode } from '../hooks/useBreakpoint';
 import { stageGeometry, type StageGeometry } from '../hooks/useStageGeometry';
 import { registerGoTo } from '../lib/carousel';
 import { LAYOUT_COMPONENTS } from '../layouts';
+import { AtsVersion } from '../layouts/AtsVersion';
 import { useResume } from '../store/resume';
 import { useUi } from '../store/ui';
 import { Page } from './Page';
@@ -40,6 +41,7 @@ export function Carousel({ mode, appW }: CarouselProps) {
   const setLayout = useResume((s) => s.setLayout);
   const zoom = useUi((s) => s.zoom);
   const setOver = useUi((s) => s.setOver);
+  const printAts = useUi((s) => s.exporting === 'ats');
 
   const g = stageGeometry(mode, paper, zoom, stageW, stageH, appW);
   const { sw, sh, gap, spacer, focus, scale, pw, ph } = g;
@@ -163,7 +165,8 @@ export function Carousel({ mode, appW }: CarouselProps) {
         <div aria-hidden="true" style={spacerStyle} />
         {LAYOUTS.map((def, i) => {
           const on = i === layout;
-          const Layout = LAYOUT_COMPONENTS[i];
+          // the ATS export swaps the active page for the single-column version of the same content
+          const Layout = on && printAts ? AtsVersion : LAYOUT_COMPONENTS[i];
           return (
             <div
               key={def.id}
@@ -173,7 +176,7 @@ export function Carousel({ mode, appW }: CarouselProps) {
                 if (useResume.getState().meta.layout !== i) goTo(i);
               }}
             >
-              <Page pw={pw} ph={ph} scale={scale} theme={theme}>
+              <Page pw={pw} ph={ph} scale={scale} theme={theme} ats={on && printAts}>
                 <Layout def={def} />
               </Page>
               {!on && <button type="button" className="hit noprint" onClick={() => goTo(i)} aria-label={`Switch to layout ${def.id}, ${def.name}`} />}

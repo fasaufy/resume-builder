@@ -16,7 +16,7 @@ export function L10AsymmetricNeo() {
   return (
     <div className="grid h-full auto-rows-min grid-cols-6 content-start gap-3 p-9 font-sans text-[11.5px] leading-[1.45] text-ink">
       <div className="card10 col-span-4 min-h-[150px] justify-end">
-        <span className="bdg"><span className="num-badge">00 — </span>Index</span>
+        <span className="bdg num-badge">00 — Index</span>
         <Basic k="fullName" style={{ fontFamily: HANKEN, fontSize: 40, fontWeight: 800, lineHeight: 1, letterSpacing: '-.035em' }} ph="Your Name" label="Full name" />
         <Basic k="headline" style={{ fontSize: 14, fontWeight: 600, color: P }} ph="e.g. Founder & Creative Director" label="Headline" />
       </div>

@@ -3,7 +3,7 @@ import { THEMES } from '../data/themes';
 import { goTo } from '../lib/carousel';
 import { useResume } from '../store/resume';
 import { useUi, type PanelTab } from '../store/ui';
-import { AtsNote, OverBadge, SampleClearButtons, useActive } from './controls';
+import { AtsExportButton, AtsNote, OverBadge, SampleClearButtons, useActive } from './controls';
 import { Swatches } from './Inspector';
 import starUrl from '../assets/ui/star.svg';
 
@@ -25,8 +25,9 @@ export function TabletPanel() {
               <button key={k} type="button" className="touch44" aria-pressed={tpanel === k} onClick={() => setPanel(k)}>{label}</button>
             ))}
           </div>
-          <div className="flex min-w-0 flex-1 justify-center">
+          <div className="flex min-w-0 flex-1 items-center justify-center gap-2">
             <AtsNote />
+            <AtsExportButton className="flex-none" />
           </div>
           <div className="flex items-center gap-2">
             <OverBadge short />

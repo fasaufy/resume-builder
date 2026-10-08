@@ -5,14 +5,24 @@ const Square = () => <span className="size-2 flex-none" style={{ background: P }
 /** L02 · 65 / 35 split with a tinted right sidebar, small caps section labels. */
 export function L02TechnicalModern() {
   return (
-    <div className="grid h-full grid-cols-[65fr_35fr] font-sans text-[12px] leading-[1.5] text-ink">
-      <div className="flex min-w-0 flex-col gap-5 pt-[52px] pr-8 pb-12 pl-[52px]">
-        <header className="flex flex-col gap-1">
-          <Basic k="fullName" style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.15 }} ph="Your Full Name" label="Full name" />
-          <Basic k="headline" style={{ fontSize: 14, fontWeight: 500, color: P }} ph="e.g. Senior Software Engineer, Platform" label="Headline" />
-          <Basic k="summary" multiline rows={2} style={{ marginTop: 6, color: '#1e293b' }} ph="Engineering focus: languages, systems you build and the scale they run at." label="Summary" />
-        </header>
+    // Reading order for ATS: name, headline, summary, contact, experience, projects, skills, education.
+    // The grid keeps the look: 65 / 35 with a full-height tinted sidebar drawn by the background.
+    <div className="grid h-full grid-cols-[65fr_35fr] grid-rows-[auto_1fr] font-sans text-[12px] leading-[1.5] text-ink" style={{ background: `linear-gradient(90deg, transparent 65%, ${TINT} 65%)` }}>
+      <header className="col-start-1 row-start-1 flex min-w-0 flex-col gap-1 pt-[52px] pr-8 pl-[52px]">
+        <Basic k="fullName" style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-.02em', lineHeight: 1.15 }} ph="Your Full Name" label="Full name" />
+        <Basic k="headline" style={{ fontSize: 14, fontWeight: 500, color: P }} ph="e.g. Senior Software Engineer, Platform" label="Headline" />
+        <Basic k="summary" multiline rows={2} style={{ marginTop: 6, color: '#1e293b' }} ph="Engineering focus: languages, systems you build and the scale they run at." label="Summary" />
+      </header>
 
+      <section className="col-start-2 row-start-1 flex min-w-0 flex-col gap-1 px-7 pt-[52px] text-[11.5px]">
+        <div className="st02 mb-1 px-[3px]">Contact</div>
+        <Basic k="email" ph="you@email.com" label="Email" />
+        <Basic k="phone" ph="+1 (555) 000-0000" label="Phone" />
+        <Basic k="location" ph="City, Country" label="Location" />
+        <Basic k="website" className="geist" style={{ fontSize: 10.5 }} ph="github.com/yourname" label="Website" />
+      </section>
+
+      <div className="col-start-1 row-start-2 flex min-w-0 flex-col gap-5 pt-5 pr-8 pb-12 pl-[52px]">
         <section className="flex flex-col gap-3">
           <div className="flex items-center gap-2"><Square /><Title k="exp" className="st02" /></div>
           <Items list="exp">
@@ -54,14 +64,7 @@ export function L02TechnicalModern() {
         </section>
       </div>
 
-      <aside className="flex min-w-0 flex-col gap-[22px] px-7 pt-[52px] pb-12" style={{ background: TINT }}>
-        <section className="flex flex-col gap-1 text-[11.5px]">
-          <div className="st02 mb-1 px-[3px]">Contact</div>
-          <Basic k="email" ph="you@email.com" label="Email" />
-          <Basic k="phone" ph="+1 (555) 000-0000" label="Phone" />
-          <Basic k="location" ph="City, Country" label="Location" />
-          <Basic k="website" className="geist" style={{ fontSize: 10.5 }} ph="github.com/yourname" label="Website" />
-        </section>
+      <div className="col-start-2 row-start-2 flex min-w-0 flex-col gap-[22px] px-7 pt-[22px] pb-12">
         <section className="flex flex-col gap-2">
           <Title k="skills" className="st02" />
           <Skills chipClass="geist" chipStyle={{ background: '#fff', border: '1px solid #cbd5e1', borderRadius: 4 }} ph="e.g. TypeScript" />
@@ -80,7 +83,7 @@ export function L02TechnicalModern() {
           </Items>
           <Add list="edu">+ Add education</Add>
         </section>
-      </aside>
+      </div>
     </div>
   );
 }

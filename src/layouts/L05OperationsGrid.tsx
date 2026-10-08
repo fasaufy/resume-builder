@@ -3,8 +3,11 @@ import { Add, Basic, Bullets, EF, Items, P, PF, Skills, TINT, Title, UI, XF } fr
 
 /** 25% gutter + content grid used by every row of this layout. */
 const GUTTER = 'grid grid-cols-[25%_minmax(0,1fr)] items-start gap-5';
-const rail: CSSProperties = { position: 'relative', borderLeft: '2px solid #cbd5e1', paddingLeft: 18 };
-const node: CSSProperties = { position: 'absolute', left: -6, top: 4, width: 10, height: 10, borderRadius: '50%' };
+const rail: CSSProperties = { borderLeft: '2px solid #cbd5e1', paddingLeft: 18 };
+/* Timeline dot drawn in normal flow (negative margins pull it onto the rail without taking space).
+   Not position:absolute on purpose: positioned boxes are painted, and so written to the PDF, after all
+   other content, which made ATS parsers read every date before any role. */
+const node: CSSProperties = { display: 'block', width: 10, height: 10, borderRadius: '50%', margin: '4px 0 -14px -24px' };
 
 /** L05 · 25% date gutter with a timeline rail for roles and education. */
 export function L05OperationsGrid() {
@@ -24,7 +27,7 @@ export function L05OperationsGrid() {
         </div>
       </header>
 
-      <section className="grid grid-cols-[25%_minmax(0,1fr)] items-start gap-x-5">
+      <section className="side-row grid grid-cols-[25%_minmax(0,1fr)] items-start gap-x-5">
         <Title k="summary" className="st04" style={sectionTitle} />
         <Basic k="summary" multiline rows={2} ph="Product focus: domains, users and the metrics you move." label="Summary" />
       </section>
@@ -71,12 +74,12 @@ export function L05OperationsGrid() {
         <div className={GUTTER}><span /><Add list="edu" style={{ margin: 0 }}>+ Add education</Add></div>
       </section>
 
-      <section className="grid grid-cols-[25%_minmax(0,1fr)] items-start gap-x-5">
+      <section className="side-row grid grid-cols-[25%_minmax(0,1fr)] items-start gap-x-5">
         <Title k="skills" className="st04" style={sectionTitle} />
         <Skills chipStyle={{ background: TINT, borderRadius: 4 }} ph="e.g. SQL" />
       </section>
 
-      <section className="grid grid-cols-[25%_minmax(0,1fr)] items-start gap-x-5">
+      <section className="side-row grid grid-cols-[25%_minmax(0,1fr)] items-start gap-x-5">
         <Title k="projects" className="st04" style={sectionTitle} />
         <div className="flex flex-col gap-[6px]">
           <Items list="projects">
