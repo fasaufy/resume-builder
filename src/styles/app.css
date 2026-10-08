@@ -94,6 +94,8 @@ textarea.fi.sm{min-height:48px}
 /* ---- additions for the React port ---- */
 /* dashed add buttons keep their content width inside grid rows too */
 .add{justify-self:start}
+/* plain-text twin of an .ed field, rendered while exporting (keeps the field's look, wraps like text) */
+.ed-print{white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
 /* clip, not hidden: focusing a field below the fold must not scroll the page box itself */
 .page{overflow:clip}
 /* inputs use field-sizing; give browsers without it a sane fallback width */
@@ -224,3 +226,9 @@ textarea.fi.sm{min-height:48px}
 [data-scope="sheet"] .fcard,[data-scope="sheet"] .btn.tall{flex-shrink:0}
 [data-scope="sheet"] .btn.tall{min-height:44px}
 [data-scope="sheet"] .seg.frost{background:rgba(0,0,0,.04)}
+
+/* ATS indicator (Styles panel, tablet panel, mobile layout sheet) */
+.ats{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:500;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ats::before{content:'';flex:none;width:6px;height:6px;border-radius:50%;background:currentColor}
+.ats-safe{background:#dcfce7;color:#166534}
+.ats-visual{background:#fef3c7;color:#92400e}

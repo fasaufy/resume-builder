@@ -25,6 +25,15 @@
   }
 
   .rowctl, .add, .is-empty { display: none !important; }
+
+  /* --- ATS (applicant tracking systems read the PDF's text in order) --- */
+  /* items stay in normal flow so each heading's content is written right after it */
+  .item { position: static !important; }
+  /* wide tracking makes parsers read "P R O F I L E"; cap it at 0.02em.
+     (.st03 / .st06 / .st07 / .st10 are already 0.02em or tighter, so they keep their own spacing.) */
+  .st01, .st02, .st04, .st08, .bdg, .headline, .page [class*="tracking-"] { letter-spacing: 0.02em !important; }
+  /* L10 numbering ("00 —", "01 —"…) is decoration; keep only the section names */
+  .num-badge { display: none !important; }
   .ed::placeholder { color: transparent !important; }
   .ed { box-shadow: none !important; background: transparent !important; }
   .item { break-inside: avoid; page-break-inside: avoid; }

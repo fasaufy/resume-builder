@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { flushSync } from 'react-dom';
 import { LAYOUTS } from '../data/layouts';
 import { getTheme, type ThemeDef } from '../data/themes';
 import { useResume, type Paper } from '../store/resume';
@@ -7,12 +8,19 @@ import logoUrl from '../assets/ui/logo.svg';
 import downloadUrl from '../assets/ui/download.svg';
 import downloadSmUrl from '../assets/ui/download-sm.svg';
 
+/**
+ * Export PDF: switch the page to plain text first (exporting = true), let the browser paint
+ * one frame, then open the print dialog. `afterprint` (see lib/printMode.ts) switches back.
+ */
 export const doPrint = () => {
-  try {
-    window.print();
-  } catch {
-    /* print blocked (e.g. sandboxed frame) */
-  }
+  flushSync(() => useUi.setState({ exporting: true }));
+  requestAnimationFrame(() => {
+    try {
+      window.print();
+    } catch {
+      useUi.setState({ exporting: false }); // print blocked (e.g. sandboxed frame)
+    }
+  });
 };
 
 /** Product logo from the UI guideline; `note` adds the "Free · No sign-up" chip. */
@@ -85,6 +93,16 @@ export function ThemeDots({ t }: { t: ThemeDef }) {
       <span className="dot" style={{ display: 'block', background: t.p }} />
       <span className="dot" style={{ display: 'block', background: t.t, marginLeft: -7 }} />
     </span>
+  );
+}
+
+/** ATS readiness of the active layout: single-column layouts parse cleanly, visual ones may not. */
+export function AtsNote({ className }: { className?: string }) {
+  const { cur } = useActive();
+  return cur.ats ? (
+    <span className={['ats ats-safe', className].filter(Boolean).join(' ')} title="Reads top to bottom, so applicant tracking systems parse it cleanly">ATS-safe</span>
+  ) : (
+    <span className={['ats ats-visual', className].filter(Boolean).join(' ')} title="Visual layout: may parse out of order in some ATS">Visual layout: may parse out of order in some ATS</span>
   );
 }
 

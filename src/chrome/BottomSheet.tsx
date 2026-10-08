@@ -6,7 +6,7 @@ import { bulletId, onBulletKey, onSkillKey, skillId } from '../lib/listKeys';
 import { useResume } from '../store/resume';
 import { useUi, type EditTab } from '../store/ui';
 import { CloseIcon } from './icons';
-import { PaperSeg, SampleClearButtons, ThemeDots, useActive } from './controls';
+import { AtsNote, PaperSeg, SampleClearButtons, ThemeDots, useActive } from './controls';
 
 const TITLES = { edit: 'Edit content', layout: 'Layout & paper', theme: 'Theme' } as const;
 
@@ -55,6 +55,7 @@ function LayoutSheet({ onPicked }: { onPicked: () => void }) {
         <span className="lbl">Paper</span>
         <PaperSeg big />
       </div>
+      <AtsNote className="self-start" />
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 8 }}>
         {LAYOUTS.map((l, i) => (
           <button key={l.id} type="button" className="pill" style={{ width: '100%', whiteSpace: 'normal' }} aria-pressed={i === layout} onClick={() => { onPicked(); goTo(i); }}>

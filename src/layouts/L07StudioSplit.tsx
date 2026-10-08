@@ -60,7 +60,7 @@ export function L07StudioSplit() {
                   <XF x={x} k="company" style={{ fontWeight: 500 }} ph="Agency or brand" label="Company" />
                   <XF x={x} k="location" style={{ flex: 'none', width: '30%', textAlign: 'right' }} ph="City" label="Location" />
                 </div>
-                <Bullets x={x} className="mt-[3px]" marker={<span aria-hidden="true" className="mt-[7px] size-[5px] rounded-full" style={{ background: P }} />} ph="Shaped a campaign or rebrand; cite reach, awareness or awards" />
+                <Bullets x={x} className="mt-[3px]" marker="•" markerStyle={{ color: P }} ph="Shaped a campaign or rebrand; cite reach, awareness or awards" />
               </>
             )}
           </Items>

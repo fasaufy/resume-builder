@@ -14,6 +14,8 @@ interface UiState {
   /** Active page content runs past one page. */
   over: boolean;
   confirmClear: boolean;
+  /** True while printing: fields render as plain text (h1/h2/p/li) instead of inputs, for ATS-readable PDFs. */
+  exporting: boolean;
   setZoom: (z: Zoom) => void;
   setSheet: (s: Sheet) => void;
   setTab: (t: EditTab) => void;
@@ -32,6 +34,7 @@ export const useUi = create<UiState>()((set, get) => ({
   tpanel: 'layouts',
   over: false,
   confirmClear: false,
+  exporting: false,
   setZoom: (zoom) => set({ zoom }),
   setSheet: (sheet) => set({ sheet }),
   setTab: (tab) => set({ tab }),

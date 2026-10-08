@@ -13,6 +13,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Editable } from '../components/Editable';
 import { PageScale } from '../components/Page';
 import { bulletId, onBulletKey, onSkillKey, skillId } from '../lib/listKeys';
+import { useUi } from '../store/ui';
 import { useResume, type Basics, type EduItem, type EditableField, type ExpItem, type ListItem, type ListKey, type ProjectItem, type Titles } from '../store/resume';
 
 /** Theme colors (CSS variables set on the page root). */
@@ -33,14 +34,16 @@ interface FieldLook {
 export function Basic({ k, ph, label, ...look }: { k: keyof Basics; ph: string; label: string } & FieldLook) {
   const v = useResume((s) => s.basics[k]);
   const set = useResume((s) => s.setBasic);
-  return <Editable value={v} onChange={(x) => set(k, x)} placeholder={ph} label={label} {...look} />;
+  // the name is the document's <h1>; headline gets a hook for print letter-spacing
+  const className = k === 'headline' ? ['headline', look.className].filter(Boolean).join(' ') : look.className;
+  return <Editable value={v} onChange={(x) => set(k, x)} placeholder={ph} label={label} printAs={k === 'fullName' ? 'h1' : undefined} {...look} className={className} />;
 }
 
-/** Editable section title. */
+/** Editable section title (an <h2> in the exported PDF). */
 export function Title({ k, ph = 'Section title', ...look }: { k: keyof Titles; ph?: string } & FieldLook) {
   const v = useResume((s) => s.titles[k]);
   const set = useResume((s) => s.setTitle);
-  return <Editable value={v} onChange={(x) => set(k, x)} placeholder={ph} label="Section title" {...look} />;
+  return <Editable value={v} onChange={(x) => set(k, x)} placeholder={ph} label="Section title" printAs="h2" {...look} />;
 }
 
 /** A field of a list item (role, degree, project name…). */
@@ -67,7 +70,23 @@ export const UI = "'Inclusive Sans',sans-serif";
 /** Achievement bullets of one role. Enter adds, Backspace on empty removes. */
 export function Bullets({ x, ph, marker, markerStyle, className, style }: { x: ExpItem; ph: string; marker: string | ReactElement; markerStyle?: CSSProperties; className?: string; style?: CSSProperties }) {
   const setBullet = useResume((s) => s.setBullet);
+  const exporting = useUi((s) => s.exporting);
   const mark = typeof marker === 'string' ? <span aria-hidden="true" style={markerStyle}>{marker}</span> : marker;
+  if (exporting) {
+    // real list for ATS: <ul><li>, empty bullets dropped
+    const filled = x.bullets.filter((b) => b.trim());
+    if (!filled.length) return null;
+    return (
+      <ul className={['flex flex-col', className].filter(Boolean).join(' ')} style={style}>
+        {filled.map((b, j) => (
+          <li key={j} className="bul">
+            {mark}
+            <span className="ed ed-print">{b}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   return (
     <div className={['flex flex-col', className].filter(Boolean).join(' ')} style={style}>
       {x.bullets.map((b, j) => (

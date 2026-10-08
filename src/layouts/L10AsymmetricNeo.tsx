@@ -5,7 +5,7 @@ import { Add, Basic, HANKEN, Bullets, EF, Items, P, PF, Skills, TINT, Title, XF 
 function CardHead({ n, children }: { n: string; children: ReactNode }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="bdg flex-none whitespace-nowrap">{n} —</span>
+      <span className="bdg num-badge flex-none whitespace-nowrap">{n} —</span>
       {children}
     </div>
   );
@@ -16,13 +16,13 @@ export function L10AsymmetricNeo() {
   return (
     <div className="grid h-full auto-rows-min grid-cols-6 content-start gap-3 p-9 font-sans text-[11.5px] leading-[1.45] text-ink">
       <div className="card10 col-span-4 min-h-[150px] justify-end">
-        <span className="bdg">00 — Index</span>
+        <span className="bdg"><span className="num-badge">00 — </span>Index</span>
         <Basic k="fullName" style={{ fontFamily: HANKEN, fontSize: 40, fontWeight: 800, lineHeight: 1, letterSpacing: '-.035em' }} ph="Your Name" label="Full name" />
         <Basic k="headline" style={{ fontSize: 14, fontWeight: 600, color: P }} ph="e.g. Founder & Creative Director" label="Headline" />
       </div>
 
       <div className="card10 col-span-2" style={{ background: `color-mix(in srgb, ${TINT} 50%, transparent)`, borderColor: 'transparent', borderTop: `4px solid ${P}` }}>
-        <span className="bdg">01 — Contact</span>
+        <span className="bdg"><span className="num-badge">01 — </span>Contact</span>
         <div className="flex flex-col">
           <Basic k="email" ph="you@studio.com" label="Email" />
           <Basic k="phone" ph="+1 (555) 000-0000" label="Phone" />

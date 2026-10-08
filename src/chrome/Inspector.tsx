@@ -2,7 +2,7 @@ import { LAYOUTS } from '../data/layouts';
 import { THEMES, type ThemeDef } from '../data/themes';
 import { goTo } from '../lib/carousel';
 import { useResume } from '../store/resume';
-import { SampleClearButtons, useActive } from './controls';
+import { AtsNote, SampleClearButtons, useActive } from './controls';
 import swatchRingUrl from '../assets/ui/swatch-ring.svg';
 import starUrl from '../assets/ui/star.svg';
 import starCaptionUrl from '../assets/ui/star-caption.svg';
@@ -37,6 +37,7 @@ export function Inspector() {
             <span className="panel-lbl uppercase">Layouts</span>
             <span className="text-[11px] text-[#475569]">{LAYOUTS.length} total</span>
           </div>
+          <AtsNote className="mb-2 self-start" />
           <div className="flex flex-col gap-1">
             {LAYOUTS.map((l, i) => (
               <button key={l.id} type="button" className="opt layout-opt" aria-pressed={i === layout} onClick={() => goTo(i)}>
