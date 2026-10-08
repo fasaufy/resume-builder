@@ -6,7 +6,10 @@
    and Chrome shrinks the whole document to fit it on the sheet, so the page came out ~60% size. */
 @media print {
   @page { margin: 0; }
-  html, body, #root { height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
+  html, body, #root { height: auto !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+  /* white paper; a layout with a full-height sidebar gets its tint here instead (PrintPageSize), so it repeats on every sheet */
+  html { background: #fff; }
+  body, #root { background: transparent !important; }
 
   /* unwrap the app shell: every ancestor of the page becomes a plain block */
   .app, .app > div:not(.noprint), .app > div > div:not(.noprint), .stage, .track, .slide.is-active {
@@ -17,12 +20,14 @@
   }
   .app .noprint, .noprint, .slide:not(.is-active), .track > [aria-hidden="true"], .hit { display: none !important; }
 
-  /* the page itself: full paper size, no screen scale or shadow, never more than one sheet */
+  /* the page itself: paper width, no screen scale. On screen it is a multi-column box (one column per page);
+     in print it is one tall block that Chrome splits into sheets, at the same places as the screen columns. */
   .slide.is-active .page {
     position: relative !important; left: auto !important; top: auto !important;
     transform: none !important; box-shadow: none !important;
-    break-after: avoid; page-break-after: avoid;
+    columns: auto !important; height: auto !important; background: none !important;
   }
+  .sheet { display: none !important; }
 
   .rowctl, .add, .is-empty { display: none !important; }
 
@@ -41,7 +46,9 @@
   .side-row > :not(:first-child) { margin-top: 14px !important; }
 
   /* ATS version: flows onto as many sheets as needed (page margins come from @page) */
-  .slide.is-active .page.ats-print { width: auto !important; height: auto !important; overflow: visible !important; break-after: auto; page-break-after: auto; }
+  .slide.is-active .page.ats-print { width: auto !important; height: auto !important; overflow: visible !important; }
+  .ats-print .flow { padding: 0 !important; }
+  .ats-print .flow > * { margin-top: 0 !important; }
   .ed::placeholder { color: transparent !important; }
   .ed { box-shadow: none !important; background: transparent !important; }
   .item { break-inside: avoid; page-break-inside: avoid; }

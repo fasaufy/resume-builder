@@ -72,9 +72,9 @@ The page is rendered at full paper size with `transform: scale()` and `transform
 
 ## Carousel behavior
 - Use a horizontal flex track with `scroll-snap-type: x mandatory`. Slides use `scroll-snap-align: center` and `scroll-snap-stop: always`. Hide the scrollbar.
-- Active index = `round(scrollLeft / (slideW + gap))`. Write it to `meta.layout`.
+- Active index = the slide whose centre is nearest the middle of the track (slides differ in width once a resume runs to several pages). Write it to `meta.layout`.
 - Programmatic `goTo(i)` uses a smooth `scrollTo`. Ignore scroll events until scrolling has been idle for about 160ms, otherwise the highlight flickers through the layouts in between.
-- When the geometry changes (resize, paper or zoom), jump to `layout*(slideW+gap)` instantly.
+- When the geometry changes (resize, paper, zoom, or a page added / removed), jump instantly so the active slide is centred.
 - Wheel listener on desktop at Fit zoom only, registered with `{passive:false}`:
   - If the gesture is mostly horizontal (`|deltaX| > |deltaY|`), let the native swipe and snap handle it.
   - Otherwise call `preventDefault`. Step one layout when a new gesture starts (more than 220ms since the last wheel event), or when more than 750ms have passed since the last step.
@@ -91,7 +91,7 @@ The page is rendered at full paper size with `transform: scale()` and `transform
   - Find the focus target with `data-bid` / `data-sid` inside the closest `[data-scope]`.
 - Item controls appear on hover or `:focus-within`: add bullet (roles only), move up, move down, delete.
 - "Load sample" fills in Alex Mercer and keeps `meta`. "Clear all" needs a second tap within 3.5s and also keeps `meta`.
-- Overflow badge: after each render, check whether the active page's `scrollHeight` is greater than its `clientHeight`. If so, show "Content runs past one page".
+- Multi-page: a resume that outgrows one sheet gets more pages automatically. `.page` is a multi-column box (one column = one sheet, `PAGE_GAP` 40px between pages); `.flow` repeats a 48px top/bottom margin on every page (`box-decoration-break: clone`); items never split (`break-inside: avoid`). The Carousel counts pages from `.flow`'s client rects and shows the spread side by side; the badge shows "N pages". Print drops the columns and Chrome splits pages at the same places. Full-height sidebar tints live in `LayoutDef.sheet` (drawn on every sheet, and on the paper in print).
 
 ## Themes
 Body text is always `#0f172a`.

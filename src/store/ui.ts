@@ -11,8 +11,8 @@ interface UiState {
   sheet: Sheet;
   tab: EditTab;
   tpanel: PanelTab;
-  /** Active page content runs past one page. */
-  over: boolean;
+  /** Number of pages the active resume runs to. */
+  pages: number;
   confirmClear: boolean;
   /**
    * Set while printing. Fields render as plain text (h1/h2/p/li) instead of inputs, for ATS-readable PDFs.
@@ -25,7 +25,7 @@ interface UiState {
   setSheet: (s: Sheet) => void;
   setTab: (t: EditTab) => void;
   setPanel: (t: PanelTab) => void;
-  setOver: (o: boolean) => void;
+  setPages: (n: number) => void;
   /** Two-tap clear: the first tap arms it for 3.5s, the second clears (meta is kept). */
   clearAll: () => void;
 }
@@ -37,7 +37,7 @@ export const useUi = create<UiState>()((set, get) => ({
   sheet: null,
   tab: 'profile',
   tpanel: 'layouts',
-  over: false,
+  pages: 1,
   confirmClear: false,
   exporting: false,
   confirmExport: null,
@@ -45,8 +45,8 @@ export const useUi = create<UiState>()((set, get) => ({
   setSheet: (sheet) => set({ sheet }),
   setTab: (tab) => set({ tab }),
   setPanel: (tpanel) => set({ tpanel }),
-  setOver: (over) => {
-    if (get().over !== over) set({ over });
+  setPages: (pages) => {
+    if (get().pages !== pages) set({ pages });
   },
   clearAll: () => {
     clearTimeout(clearTimer);

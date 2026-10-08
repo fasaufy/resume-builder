@@ -3,7 +3,7 @@ import { LAYOUTS } from '../data/layouts';
 import { getTheme } from '../data/themes';
 import { useElementSize } from '../hooks/useElementSize';
 import type { Mode } from '../hooks/useBreakpoint';
-import { stageGeometry, type StageGeometry } from '../hooks/useStageGeometry';
+import { slideWidth, spacerFor, stageGeometry, type StageGeometry } from '../hooks/useStageGeometry';
 import { registerGoTo } from '../lib/carousel';
 import { LAYOUT_COMPONENTS } from '../layouts';
 import { AtsVersion } from '../layouts/AtsVersion';
@@ -26,9 +26,41 @@ interface CarouselProps {
   appW: number;
 }
 
+/** Slides in track order. */
+const slidesOf = (track: HTMLElement) => track.querySelectorAll<HTMLElement>(':scope > .slide');
+
+/** scrollLeft that centres slide i (slides can differ in width: multi-page resumes are wider). */
+function centerLeft(track: HTMLElement, i: number) {
+  const s = slidesOf(track)[i];
+  return s ? s.offsetLeft + s.offsetWidth / 2 - track.clientWidth / 2 : 0;
+}
+
+/** Slide whose centre is nearest the middle of the track. */
+function nearestSlide(track: HTMLElement) {
+  const mid = track.scrollLeft + track.clientWidth / 2;
+  let best = 0;
+  let dist = Infinity;
+  slidesOf(track).forEach((s, i) => {
+    const d = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid);
+    if (d < dist) [best, dist] = [i, d];
+  });
+  return best;
+}
+
+/**
+ * Pages a layout's content currently fills. The page is a multi-column box with one column per page,
+ * and the content box (.flow) returns one client rect per page it is split across. (Not the page's
+ * scrollWidth: the sheets drawn for the current page count would keep it from ever shrinking.)
+ */
+function measurePages(slide: HTMLElement) {
+  const flow = slide.querySelector<HTMLElement>('.flow');
+  return flow ? Math.max(1, flow.getClientRects().length) : 1;
+}
+
 /**
  * Horizontal scroll-snap track of all layouts. The active index lives in meta.layout.
  * Desktop at Fit zoom turns vertical wheel/trackpad into one-layout-per-gesture.
+ * A resume that needs more than one page shows its pages side by side in its slide.
  */
 export function Carousel({ mode, appW }: CarouselProps) {
   const [stageEl, setStageEl] = useState<HTMLDivElement | null>(null);
@@ -40,11 +72,18 @@ export function Carousel({ mode, appW }: CarouselProps) {
   const theme = getTheme(useResume((s) => s.meta.theme));
   const setLayout = useResume((s) => s.setLayout);
   const zoom = useUi((s) => s.zoom);
-  const setOver = useUi((s) => s.setOver);
-  const printAts = useUi((s) => s.exporting === 'ats');
+  const setActivePages = useUi((s) => s.setPages);
+  const exporting = useUi((s) => s.exporting);
+  const printAts = exporting === 'ats';
 
-  const g = stageGeometry(mode, paper, zoom, stageW, stageH, appW);
-  const { sw, sh, gap, spacer, focus, scale, pw, ph } = g;
+  /* pages per layout, measured after each render / edit */
+  const [pages, setPages] = useState<number[]>(() => LAYOUTS.map(() => 1));
+
+  const g = stageGeometry(mode, paper, zoom, stageW, stageH, appW, pages[layout]);
+  const { sh, gap, focus, scale, pw, ph } = g;
+  const widths = pages.map((n) => slideWidth(g, n));
+  const lead = spacerFor(g, widths[0]);
+  const trail = spacerFor(g, widths[LAST]);
 
   // Latest values for event handlers registered outside React.
   const geo = useRef<StageGeometry & { mode: Mode; stageW: number; stageH: number }>({ ...g, mode, stageW, stageH });
@@ -65,14 +104,17 @@ export function Carousel({ mode, appW }: CarouselProps) {
     (target: number) => {
       const i = clamp(target);
       setLayout(i);
-      const { sw, gap, focus } = geo.current;
-      if (!trackEl || focus) return;
+      if (!trackEl || geo.current.focus) return;
       holdProg(PROG_SMOOTH_MS);
-      try {
-        trackEl.scrollTo({ left: i * (sw + gap), behavior: 'smooth' });
-      } catch {
-        trackEl.scrollLeft = i * (sw + gap);
-      }
+      // after React has resized the slides for the new active layout
+      requestAnimationFrame(() => {
+        const left = centerLeft(trackEl, i);
+        try {
+          trackEl.scrollTo({ left, behavior: 'smooth' });
+        } catch {
+          trackEl.scrollLeft = left;
+        }
+      });
     },
     [trackEl, setLayout],
   );
@@ -82,7 +124,7 @@ export function Carousel({ mode, appW }: CarouselProps) {
     return () => registerGoTo(null);
   }, [goTo]);
 
-  /* When geometry changes (resize, paper, zoom, mode), jump to the active slide instantly. */
+  /* When geometry changes (resize, paper, zoom, mode, a page added or removed), jump to the active slide instantly. */
   const alignKey = useRef<string | null>(null);
   useLayoutEffect(() => {
     if (!trackEl) return;
@@ -90,11 +132,11 @@ export function Carousel({ mode, appW }: CarouselProps) {
       alignKey.current = null;
       return;
     }
-    const key = `${sw}|${gap}|${spacer}`;
+    const key = `${scale}|${gap}|${widths.join(',')}|${lead}|${trail}|${g.sW}`;
     if (key === alignKey.current) return;
     alignKey.current = key;
     holdProg(PROG_JUMP_MS);
-    trackEl.scrollLeft = useResume.getState().meta.layout * (sw + gap);
+    trackEl.scrollLeft = centerLeft(trackEl, useResume.getState().meta.layout);
   });
 
   const onScroll = () => {
@@ -102,12 +144,12 @@ export function Carousel({ mode, appW }: CarouselProps) {
       holdProg(PROG_IDLE_MS);
       return;
     }
-    const { sw, gap, focus, stageW, stageH } = geo.current;
+    const { focus, stageW, stageH } = geo.current;
     if (!trackEl || !stageEl || focus) return;
     // Scroll events fire before the ResizeObserver: while the stage has a new size the
     // geometry above is stale, so don't infer an index. The re-align effect will run next.
     if (stageEl.clientWidth !== stageW || stageEl.clientHeight !== stageH) return;
-    const i = clamp(Math.round(trackEl.scrollLeft / (sw + gap)));
+    const i = clamp(nearestSlide(trackEl));
     if (i !== useResume.getState().meta.layout) setLayout(i);
   };
 
@@ -134,17 +176,18 @@ export function Carousel({ mode, appW }: CarouselProps) {
     return () => trackEl.removeEventListener('wheel', onWheel);
   }, [trackEl, goTo]);
 
-  /* Overflow badge: does the active page's content run past one page? */
-  const checkOverflow = useCallback(() => {
-    const p = trackEl?.querySelector<HTMLElement>('.slide.is-active .page');
-    if (p) setOver(p.scrollHeight > p.clientHeight + 2);
-  }, [trackEl, setOver]);
-  useLayoutEffect(checkOverflow);
+  /* Page count: measure every layout after each render and edit (pages are added / removed automatically). */
+  const measure = useCallback(() => {
+    if (!trackEl || useUi.getState().exporting) return; // printing swaps content; keep the screen layout as it was
+    const next = [...slidesOf(trackEl)].map(measurePages);
+    setPages((prev) => (next.length === prev.length && next.every((n, i) => n === prev[i]) ? prev : next));
+  }, [trackEl]);
+  useLayoutEffect(measure);
   useEffect(() => {
     let raf = 0;
     const schedule = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(checkOverflow);
+      raf = requestAnimationFrame(measure);
     };
     const unsub = useResume.subscribe(schedule);
     document.fonts?.ready.then(schedule);
@@ -152,17 +195,18 @@ export function Carousel({ mode, appW }: CarouselProps) {
       unsub();
       cancelAnimationFrame(raf);
     };
-  }, [checkOverflow]);
+  }, [measure]);
+  useEffect(() => setActivePages(pages[layout]), [pages, layout, setActivePages]);
 
   const trackStyle: CSSProperties = focus
-    ? { minHeight: '100%', overflow: 'visible', scrollSnapType: 'none', width: 'max-content', minWidth: '100%', justifyContent: 'center', alignItems: 'flex-start', padding: '24px 16px 160px' } // bottom room so the page can scroll clear of the floating navigator
-    : { minHeight: '100%', height: '100%', alignItems: 'center', gap };
-  const spacerStyle: CSSProperties = focus ? { display: 'none' } : { flex: 'none', width: spacer, height: 1 };
+    ? { position: 'relative', minHeight: '100%', overflow: 'visible', scrollSnapType: 'none', width: 'max-content', minWidth: '100%', justifyContent: 'center', alignItems: 'flex-start', padding: '24px 16px 160px' } // bottom room so the page can scroll clear of the floating navigator
+    : { position: 'relative', minHeight: '100%', height: '100%', alignItems: 'center', gap };
+  const spacerStyle = (w: number): CSSProperties => (focus ? { display: 'none' } : { flex: 'none', width: w, height: 1 });
 
   return (
     <div ref={setStageEl} className="stage" style={{ flex: 1, minHeight: 0, overflow: focus ? 'auto' : 'hidden' }}>
       <div ref={setTrackEl} className="track" onScroll={onScroll} aria-label="Resume layouts carousel" style={trackStyle}>
-        <div aria-hidden="true" style={spacerStyle} />
+        <div aria-hidden="true" style={spacerStyle(lead)} />
         {LAYOUTS.map((def, i) => {
           const on = i === layout;
           // the ATS export swaps the active page for the single-column version of the same content
@@ -171,19 +215,19 @@ export function Carousel({ mode, appW }: CarouselProps) {
             <div
               key={def.id}
               className={on ? 'slide is-active' : 'slide'}
-              style={{ flex: 'none', width: sw, height: sh, display: focus && !on ? 'none' : undefined, opacity: !focus && !on ? 0.2 : undefined }}
+              style={{ flex: 'none', width: widths[i], height: sh, display: focus && !on ? 'none' : undefined, opacity: !focus && !on ? 0.2 : undefined }}
               onFocus={() => {
                 if (useResume.getState().meta.layout !== i) goTo(i);
               }}
             >
-              <Page pw={pw} ph={ph} scale={scale} theme={theme} ats={on && printAts}>
+              <Page pw={pw} ph={ph} scale={scale} theme={theme} pages={pages[i]} sheet={on && printAts ? undefined : def.sheet} ats={on && printAts}>
                 <Layout def={def} />
               </Page>
               {!on && <button type="button" className="hit noprint" onClick={() => goTo(i)} aria-label={`Switch to layout ${def.id}, ${def.name}`} />}
             </div>
           );
         })}
-        <div aria-hidden="true" style={spacerStyle} />
+        <div aria-hidden="true" style={spacerStyle(trail)} />
       </div>
     </div>
   );

@@ -73,10 +73,11 @@ export function PaperSeg({ big }: { big?: boolean }) {
   );
 }
 
-export function OverBadge({ short, style }: { short?: boolean; style?: CSSProperties }) {
-  const over = useUi((s) => s.over);
-  if (!over) return null;
-  return <span className="badge" style={style}>{short ? '2+ pages' : 'Content runs past one page'}</span>;
+/** Page count of the active resume, shown once it runs past one page (pages are added automatically). */
+export function OverBadge({ style }: { short?: boolean; style?: CSSProperties }) {
+  const pages = useUi((s) => s.pages);
+  if (pages < 2) return null;
+  return <span className="badge pages-badge" style={style}>{pages} pages</span>;
 }
 
 export function SampleClearButtons({ tall }: { tall?: boolean }) {
