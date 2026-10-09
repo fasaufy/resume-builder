@@ -231,12 +231,12 @@ textarea.fi.sm{min-height:48px}
 
 /* mobile bottom sheet: list items in the scrolling body must not shrink (they did, squashing
    "+ Add role" / "+ Add project" to 24px); the frosted switch gets a 4% darker track so it reads as tabs */
-[data-scope="sheet"] .fcard,[data-scope="sheet"] .btn.tall{flex-shrink:0}
+[data-scope="sheet"] .fcard,[data-scope="sheet"] .btn.tall,[data-scope="sheet"] .ats-tip{flex-shrink:0}
 [data-scope="sheet"] .btn.tall{min-height:44px}
 [data-scope="sheet"] .seg.frost{background:rgba(0,0,0,.04)}
 
 /* ATS indicator (Styles panel, tablet panel, mobile layout sheet) */
-.ats{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:500;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ats{display:inline-flex;flex-shrink:0;align-items:center;gap:6px;max-width:100%;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:500;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ats::before{content:'';flex:none;width:6px;height:6px;border-radius:50%;background:currentColor}
 .ats-safe{background:#dcfce7;color:#166534}
 .ats-visual{background:#fef3c7;color:#92400e}
